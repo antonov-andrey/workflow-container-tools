@@ -1,11 +1,30 @@
 """Generic workflow-container project audit."""
 
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
 import yaml
 
 from workflow_container_developer.project import WorkflowContainerProject
+
+
+PROMPT_SCAN_IGNORED_DIRECTORY_NAME_SET = {
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    ".worktrees",
+    "__pycache__",
+    "build",
+    "dist",
+    "fixture",
+    "fixtures",
+    "test",
+    "tests",
+    "tmp",
+}
 
 
 @dataclass(frozen=True)
@@ -73,10 +92,20 @@ class WorkflowContainerAudit:
             warning_list: Audit warning output list.
         """
 
-        for prompt_path in self._project.path.rglob("prompt"):
-            if prompt_path.is_dir() and any(prompt_path.glob("*.md")):
-                warning_list.append("Root-level prompt markdown files found; use template tree")
-                return
+        for root, directory_name_list, filename_list in os.walk(self._project.path):
+            directory_name_list[:] = [
+                directory_name
+                for directory_name in sorted(directory_name_list)
+                if directory_name not in PROMPT_SCAN_IGNORED_DIRECTORY_NAME_SET
+            ]
+            root_path = Path(root)
+            if root_path.name != "prompt":
+                continue
+            for filename in sorted(filename_list):
+                prompt_markdown_path = root_path / filename
+                if prompt_markdown_path.suffix == ".md":
+                    relative_path = prompt_markdown_path.relative_to(self._project.path)
+                    warning_list.append(f"Root-level prompt markdown file found at {relative_path}; use template tree")
 
     def _required_file_check(self, relative_path: Path, error_list: list[str]) -> None:
         """Check for one required project file.

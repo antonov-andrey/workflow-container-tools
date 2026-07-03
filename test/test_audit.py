@@ -99,7 +99,39 @@ def test_audit_result_success_for_valid_project(tmp_path: Path) -> None:
     assert result.warning_list == []
 
 
-def test_audit_result_warns_for_prompt_markdown_outside_template_tree(tmp_path: Path) -> None:
+def test_audit_result_ignores_transient_prompt_markdown(tmp_path: Path) -> None:
+    """Ignore prompt markdown under transient and test fixture trees."""
+
+    target_path = _target_create(tmp_path)
+    ignored_name_list = [
+        ".git",
+        ".mypy_cache",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv",
+        ".worktrees",
+        "__pycache__",
+        "build",
+        "dist",
+        "fixture",
+        "fixtures",
+        "test",
+        "tests",
+        "tmp",
+    ]
+    for ignored_name in ignored_name_list:
+        prompt_path = target_path / ignored_name / "workflow_module" / "prompt"
+        prompt_path.mkdir(parents=True)
+        (prompt_path / "duplicate.md").write_text("# Duplicate\n", encoding="utf-8")
+
+    result = WorkflowContainerAudit(project=_target_project_get(target_path)).result_get()
+
+    assert result.is_ok
+    assert result.error_list == []
+    assert result.warning_list == []
+
+
+def test_audit_result_warns_for_prompt_markdown_outside_template_tree_with_path(tmp_path: Path) -> None:
     """Warn when root prompt markdown duplicates template-owned prompts."""
 
     target_path = _target_create(tmp_path)
@@ -113,4 +145,4 @@ def test_audit_result_warns_for_prompt_markdown_outside_template_tree(tmp_path: 
 
     assert result.is_ok
     assert result.error_list == []
-    assert "Root-level prompt markdown files found; use template tree" in result.warning_list
+    assert "Root-level prompt markdown file found at workflow_module/prompt/duplicate.md; use template tree" in result.warning_list

@@ -74,7 +74,7 @@ def test_cli_audit_reports_warnings(tmp_path: Path, capsys) -> None:
     assert main(["--developer-path", str(developer_path), "audit", "sample-container"]) == 0
 
     captured = capsys.readouterr()
-    assert "WARNING Root-level prompt markdown files found; use template tree" in captured.out
+    assert "WARNING Root-level prompt markdown file found at workflow_module/prompt/duplicate.md; use template tree" in captured.out
     assert "OK sample-container" in captured.out
 
 
