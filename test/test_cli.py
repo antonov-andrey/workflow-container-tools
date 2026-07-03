@@ -2,7 +2,88 @@
 
 from pathlib import Path
 
+from workflow_container_developer.audit import WorkflowContainerAuditResult
 from workflow_container_developer.cli import main
+
+
+def _target_create(tmp_path: Path) -> tuple[Path, Path]:
+    """Create a developer checkout and adjacent workflow-container target.
+
+    Args:
+        tmp_path: Temporary test root.
+
+    Returns:
+        Developer path and target path.
+    """
+
+    developer_path = tmp_path / "workflow-container-developer"
+    developer_path.mkdir()
+    target_path = tmp_path / "sample-container"
+    target_path.mkdir()
+    (target_path / "workflow.yaml").write_text("name: sample\ncommand:\n  - sample-run\n", encoding="utf-8")
+    (target_path / "versions.yaml").write_text("project: sample\nversion: 0.1.0\n", encoding="utf-8")
+    (target_path / "AGENTS.md").write_text("# Repository Guidelines\n", encoding="utf-8")
+    (target_path / "doc" / "design").mkdir(parents=True)
+    (target_path / "doc" / "design" / "sample.md").write_text("# Sample\n", encoding="utf-8")
+    return developer_path, target_path
+
+
+def test_cli_audit_reports_errors(tmp_path: Path, capsys) -> None:
+    """Return failure status and print audit errors."""
+
+    developer_path, target_path = _target_create(tmp_path)
+    (target_path / "AGENTS.md").unlink()
+
+    assert main(["--developer-path", str(developer_path), "audit", "sample-container"]) == 1
+
+    captured = capsys.readouterr()
+    assert "ERROR Missing AGENTS.md" in captured.out
+
+
+def test_cli_audit_reports_success(tmp_path: Path, capsys) -> None:
+    """Audit a selected adjacent workflow-container project."""
+
+    developer_path, _target_path = _target_create(tmp_path)
+
+    assert main(["--developer-path", str(developer_path), "audit", "sample-container"]) == 0
+
+    captured = capsys.readouterr()
+    assert "OK sample-container" in captured.out
+
+
+def test_cli_audit_reports_warnings(tmp_path: Path, capsys, monkeypatch) -> None:
+    """Print warning output from generic audit results."""
+
+    developer_path, _target_path = _target_create(tmp_path)
+
+    class AuditStub:
+        """Audit test double."""
+
+        def __init__(self, *, project: object) -> None:
+            """Initialize the audit test double.
+
+            Args:
+                project: Target project.
+            """
+
+            self._project = project
+
+        def result_get(self) -> WorkflowContainerAuditResult:
+            """Return a warning-only audit result.
+
+            Returns:
+                Warning-only audit result.
+            """
+
+            return WorkflowContainerAuditResult(warning_list=["Generic warning"])
+
+    monkeypatch.setattr("workflow_container_developer.cli.WorkflowContainerAudit", AuditStub)
+
+    assert main(["--developer-path", str(developer_path), "audit", "sample-container"]) == 0
+
+    captured = capsys.readouterr()
+    assert "WARNING Generic warning" in captured.out
+    assert "OK sample-container" in captured.out
 
 
 def test_cli_list_outputs_adjacent_project(tmp_path: Path, capsys) -> None:
