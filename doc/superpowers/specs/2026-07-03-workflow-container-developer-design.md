@@ -8,7 +8,7 @@
 ## Границы Ответственности
 
 ### `workflow-container-developer`
-`workflow-container-developer` владеет только общими правилами разработки workflow-container проектов:
+`workflow-container-developer` владеет только общими правилами разработки workflow-container проектов. Канонический reusable authoring contract живет в `doc/design/workflow-container-authoring.md`:
 
 - authoring contract для `DBOS` workflow source;
 - общие инструкции для `Codex CLI` при разработке соседних workflow-container;
@@ -83,7 +83,7 @@ CLI-инструменты `workflow-container-developer` должны быть 
 CLI-инструменты не должны содержать branches such as `if project == "brand-size-chart"`. Project-specific commands must be declared by the target project in its own config or documentation and consumed generically.
 
 ## Общий Authoring Contract
-`workflow-container-developer` должен владеть общими правилами, которые сейчас частично разложены по `marketplace-automation` и `brand-size-chart`:
+`doc/design/workflow-container-authoring.md` должен владеть общими правилами, которые сейчас частично разложены по `marketplace-automation` и `brand-size-chart`:
 
 - `DBOS` workflow source structure;
 - stateless `@DBOS.dbos_class` workflow and step owners;
@@ -104,8 +104,7 @@ CLI-инструменты не должны содержать branches such as
 - no browser-specific copy behavior inside `Codex` stage;
 - browser runtime received as external `MCP` URL;
 - workflow code does not launch `@playwright/mcp`, `npx`, OpenVPN or custom browser runtime;
-- `Codex` subprocess has no filesystem sandbox inside workflow container;
-- secret `DataSource` conventional paths for `codex_profile/**` and browser/VPN assets where relevant.
+- `Codex` subprocess has no filesystem sandbox inside workflow container.
 
 ## Рефакторинг Текущих Проектов
 Нужно перенести ownership общих правил:
@@ -135,4 +134,3 @@ CLI-инструменты не должны содержать branches such as
 - переписывания domain logic `brand-size-chart`;
 - автоматического подключения `workflow-container-developer` как submodule к другим проектам;
 - runtime-зависимости workflow-container projects от `workflow-container-developer`.
-
