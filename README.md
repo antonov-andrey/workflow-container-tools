@@ -19,6 +19,15 @@ The project provides generic CLI tools. Concrete workflow logic stays in the tar
 workflow-container-dev --help
 ```
 
+## Typical Flow
+
+```bash
+workflow-container-dev list
+workflow-container-dev audit brand-size-chart
+```
+
+The target name is the adjacent project directory name. The CLI discovers workflow-container projects by `workflow.yaml` and `versions.yaml`; it does not know concrete workflow names.
+
 ## Development
 
 ```bash
