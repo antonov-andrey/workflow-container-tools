@@ -3,9 +3,24 @@
 ## Назначение
 Этот документ владеет общим контрактом разработки workflow-container проектов. Он описывает, как писать `DBOS` workflow source, `Codex` stages, prompt templates, validators и artifacts. Runtime platform принадлежит `marketplace-automation`; generic workflow-container runtime принадлежит `workflow-container-runtime`; browser/VPN runtime принадлежит `browser-vpn-runtime`; domain logic принадлежит каждому конкретному workflow-container project.
 
-Канонический путь этого контракта: `doc/design/workflow-container-authoring.md`.
+Канонический путь этого контракта внутри установленного plugin: `references/workflow-container-authoring.md`.
 
 Конкретный workflow-container project может ссылаться на этот документ из своих инструкций и design-документов, но не должен зависеть от `workflow-container-developer` в production runtime, импортировать его product code или требовать его CLI для запуска workflow.
+
+## Code Quality Baseline
+Проекты workflow-container экосистемы должны использовать общий минимальный baseline качества кода. Этот baseline переносит только проверяемые и идиоматические правила, которые защищают сопровождаемость проекта, и не переносит приватные вкусовые ограничения из внутренних репозиториев.
+
+`pyproject.toml` должен объявлять `requires-python = ">=3.14"` и конфигурацию `Black` с `target-version = ["py314"]` и `line-length = 120`. Форматирование должно выполняться через `Black`, а не через ручное выравнивание.
+
+Тесты должны запускаться через `pytest`. Runtime package проекты должны дополнительно проходить `python -m compileall <package>` перед handoff после Python behavior changes.
+
+Public API, stable boundary functions, workflow entrypoints, stage interfaces и non-trivial modules должны иметь type annotations и docstrings, описывающие реальный контракт. Stable config, result, state, stage payload и cross-boundary data objects должны быть strict `Pydantic` v2 models. JSON schema artifacts должны генерироваться из этих моделей, а не храниться как второй ручной источник истины.
+
+Refactor должен оставлять код в конечном steady state. Compatibility bridges, forwarding aliases, proxy wrappers, duplicated prompt partials, duplicated generated schemas и локальные копии runtime-owned code запрещены, если пользователь явно не запросил staged migration.
+
+Project-local imports должны быть обычными module-scope imports. Production code не должен использовать local imports, import fallbacks, dynamic project-local imports или deferred missing-dependency fallbacks.
+
+Полные приватные naming grammar, ORM rules, production database rules, обязательные docstring для каждой private helper function и другие внутренние правила приватных репозиториев не входят в этот baseline.
 
 ## Runtime Package Boundary
 `workflow-container-runtime` владеет generic исполняемым runtime-кодом и generic prompt resources, которые нужны workflow-container проектам в production runtime: `Codex` subprocess runner, JSON schema output boundary, common prompt renderer, common prompt partials, generic browser-tool event validation и generic artifact helpers.

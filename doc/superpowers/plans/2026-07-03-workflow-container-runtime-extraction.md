@@ -13,13 +13,13 @@
 ### Task 1: Runtime Project Bootstrap
 
 **Files:**
-- Create: `/home/andrey/Projects/workflow-container-runtime/AGENTS.md`
-- Create: `/home/andrey/Projects/workflow-container-runtime/README.md`
-- Create: `/home/andrey/Projects/workflow-container-runtime/pyproject.toml`
-- Create: `/home/andrey/Projects/workflow-container-runtime/workflow_container_runtime/__init__.py`
-- Create: `/home/andrey/Projects/workflow-container-runtime/test/test_package.py`
+- Create: `<projects-root>/workflow-container-runtime/AGENTS.md`
+- Create: `<projects-root>/workflow-container-runtime/README.md`
+- Create: `<projects-root>/workflow-container-runtime/pyproject.toml`
+- Create: `<projects-root>/workflow-container-runtime/workflow_container_runtime/__init__.py`
+- Create: `<projects-root>/workflow-container-runtime/test/test_package.py`
 
-- [ ] Clone `git@github.com:antonov-andrey/workflow-container-runtime.git` into `/home/andrey/Projects/workflow-container-runtime`.
+- [ ] Clone `git@github.com:antonov-andrey/workflow-container-runtime.git` into `<projects-root>/workflow-container-runtime`.
 - [ ] Add a minimal Python 3.14 package with strict local `AGENTS.md`: runtime code only, no domain workflow logic, no concrete workflow-container names.
 - [ ] Add package metadata with dependencies needed by the extracted runtime: `pydantic>=2.0`, `Jinja2>=3.1.0`.
 - [ ] Add a package import smoke test.
@@ -28,14 +28,14 @@
 ### Task 2: Generic Codex Runner Extraction
 
 **Files:**
-- Create: `/home/andrey/Projects/workflow-container-runtime/workflow_container_runtime/artifact/writer.py`
-- Create: `/home/andrey/Projects/workflow-container-runtime/workflow_container_runtime/codex/runner.py`
-- Create: `/home/andrey/Projects/workflow-container-runtime/workflow_container_runtime/codex/schema.py`
-- Create: `/home/andrey/Projects/workflow-container-runtime/test/test_codex_runner.py`
-- Modify: `/home/andrey/Projects/<workflow-container-project>/<workflow_container_package>/codex/runner.py`
-- Modify: `/home/andrey/Projects/<workflow-container-project>/<workflow_container_package>/codex/schema.py`
-- Modify: `/home/andrey/Projects/<workflow-container-project>/<workflow_container_package>/codex/__init__.py`
-- Modify: `/home/andrey/Projects/<workflow-container-project>/<workflow_container_package>/codex_stage.py`
+- Create: `<projects-root>/workflow-container-runtime/workflow_container_runtime/artifact/writer.py`
+- Create: `<projects-root>/workflow-container-runtime/workflow_container_runtime/codex/runner.py`
+- Create: `<projects-root>/workflow-container-runtime/workflow_container_runtime/codex/schema.py`
+- Create: `<projects-root>/workflow-container-runtime/test/test_codex_runner.py`
+- Modify: `<projects-root>/<workflow-container-project>/<workflow_container_package>/codex/runner.py`
+- Modify: `<projects-root>/<workflow-container-project>/<workflow_container_package>/codex/schema.py`
+- Modify: `<projects-root>/<workflow-container-project>/<workflow_container_package>/codex/__init__.py`
+- Modify: `<projects-root>/<workflow-container-project>/<workflow_container_package>/codex_stage.py`
 
 - [ ] Move generic JSON artifact writing needed by the runner into runtime without importing `<workflow-container-project>`.
 - [ ] Move `CodexStageRunner`, `CodexStageError`, `codex_stage_run`, Codex output schema generation, browser JavaScript/tool validation, subprocess timeout, diagnostics writing, and MCP config construction into runtime.
@@ -46,15 +46,15 @@
 ### Task 3: Prompt Resource Extraction
 
 **Files:**
-- Create: `/home/andrey/Projects/workflow-container-runtime/workflow_container_runtime/prompt/renderer.py`
-- Create: `/home/andrey/Projects/workflow-container-runtime/workflow_container_runtime/prompt/template/partial/runtime_source_access.md.j2`
-- Create: `/home/andrey/Projects/workflow-container-runtime/workflow_container_runtime/prompt/template/partial/artifact_reference_contract.md.j2`
-- Create: `/home/andrey/Projects/workflow-container-runtime/workflow_container_runtime/prompt/template/partial/stage_verification_contract.md.j2`
-- Create: `/home/andrey/Projects/workflow-container-runtime/test/test_prompt_renderer.py`
-- Modify: `/home/andrey/Projects/<workflow-container-project>/<workflow_container_package>/prompt/renderer.py`
-- Modify: `/home/andrey/Projects/<workflow-container-project>/<workflow_container_package>/prompt/template/*.md.j2`
-- Delete: `/home/andrey/Projects/<workflow-container-project>/<workflow_container_package>/prompt/template/partial/runtime_source_access.md.j2`
-- Delete: `/home/andrey/Projects/<workflow-container-project>/<workflow_container_package>/prompt/template/partial/artifact_reference_contract.md.j2`
+- Create: `<projects-root>/workflow-container-runtime/workflow_container_runtime/prompt/renderer.py`
+- Create: `<projects-root>/workflow-container-runtime/workflow_container_runtime/prompt/template/partial/runtime_source_access.md.j2`
+- Create: `<projects-root>/workflow-container-runtime/workflow_container_runtime/prompt/template/partial/artifact_reference_contract.md.j2`
+- Create: `<projects-root>/workflow-container-runtime/workflow_container_runtime/prompt/template/partial/stage_verification_contract.md.j2`
+- Create: `<projects-root>/workflow-container-runtime/test/test_prompt_renderer.py`
+- Modify: `<projects-root>/<workflow-container-project>/<workflow_container_package>/prompt/renderer.py`
+- Modify: `<projects-root>/<workflow-container-project>/<workflow_container_package>/prompt/template/*.md.j2`
+- Delete: `<projects-root>/<workflow-container-project>/<workflow_container_package>/prompt/template/partial/runtime_source_access.md.j2`
+- Delete: `<projects-root>/<workflow-container-project>/<workflow_container_package>/prompt/template/partial/artifact_reference_contract.md.j2`
 
 - [ ] Add a runtime Jinja2 renderer that loads runtime package templates and project template directories together with `StrictUndefined`.
 - [ ] Move generic source-access and artifact-reference partials to runtime package resources.
@@ -65,12 +65,12 @@
 ### Task 4: Dependency Wiring And Documentation
 
 **Files:**
-- Modify: `/home/andrey/Projects/<workflow-container-project>/pyproject.toml`
-- Modify: `/home/andrey/Projects/<workflow-container-project>/AGENTS.md`
-- Modify: `/home/andrey/Projects/<workflow-container-project>/doc/design/<workflow-container-project>.md`
-- Modify: `/home/andrey/Projects/workflow-container-developer/doc/design/workflow-container-authoring.md`
-- Modify: `/home/andrey/Projects/workflow-container-developer/workflow_container_developer/audit.py`
-- Modify: `/home/andrey/Projects/workflow-container-developer/test/test_audit.py`
+- Modify: `<projects-root>/<workflow-container-project>/pyproject.toml`
+- Modify: `<projects-root>/<workflow-container-project>/AGENTS.md`
+- Modify: `<projects-root>/<workflow-container-project>/doc/design/<workflow-container-project>.md`
+- Modify: `<projects-root>/workflow-container-developer/doc/design/workflow-container-authoring.md`
+- Modify: `<projects-root>/workflow-container-developer/workflow_container_developer/audit.py`
+- Modify: `<projects-root>/workflow-container-developer/test/test_audit.py`
 
 - [ ] Add `workflow-container-runtime` as an explicit `<workflow-container-project>` dependency through a pinned Git commit dependency.
 - [ ] Update `<workflow-container-project>` instructions/design so generic Codex runtime and generic prompt partials belong to `workflow-container-runtime`, not to the domain project.
@@ -82,8 +82,8 @@
 **Files:**
 - Test all changed projects.
 
-- [ ] Run runtime tests: `cd /home/andrey/Projects/workflow-container-runtime && python -m pytest -q && python -m compileall workflow_container_runtime`.
-- [ ] Run brand tests: `cd /home/andrey/Projects/<workflow-container-project> && python -m pytest -q && python -m compileall <workflow_container_package>`.
-- [ ] Run developer tests and audit: `cd /home/andrey/Projects/workflow-container-developer && python -m pytest -q && python -c 'import workflow_container_developer.cli as cli; raise SystemExit(cli.main(["audit", "<workflow-container-project>"]))'`.
+- [ ] Run runtime tests: `cd <projects-root>/workflow-container-runtime && python -m pytest -q && python -m compileall workflow_container_runtime`.
+- [ ] Run brand tests: `cd <projects-root>/<workflow-container-project> && python -m pytest -q && python -m compileall <workflow_container_package>`.
+- [ ] Run developer tests and audit: `cd <projects-root>/workflow-container-developer && python -m pytest -q && python -c 'import workflow_container_developer.cli as cli; raise SystemExit(cli.main(["audit", "<workflow-container-project>"]))'`.
 - [ ] Run targeted prompt rendering tests in `<workflow-container-project>` and import smoke checks proving `<workflow-container-project>` imports runtime package code.
 - [ ] Report any skipped real external workflow run explicitly; this change is runtime extraction, so unit/contract verification is the required direct check unless the user separately requests a full Defacto production run.

@@ -14,7 +14,7 @@
 
 - Create `AGENTS.md` in `workflow-container-developer`: project-local rules for authoring workflow-container projects.
 - Create `README.md` in `workflow-container-developer`: entrypoint documentation for humans.
-- Create `pyproject.toml` in `workflow-container-developer`: package metadata, console script and test config.
+- Create `pyproject.toml` in `workflow-container-developer`: package metadata, local CLI package and test config.
 - Create `workflow_container_developer/__init__.py`: package marker.
 - Create `workflow_container_developer/cli.py`: direct CLI entrypoint with `main()`.
 - Create `workflow_container_developer/project.py`: adjacent project discovery, target loading and command execution primitives.
@@ -22,9 +22,9 @@
 - Create `test/test_project.py`, `test/test_audit.py`, and `test/test_cli.py`: behavior tests for generic discovery/audit/CLI behavior.
 - Create `doc/design/workflow-container-authoring.md`: canonical reusable workflow-container authoring contract.
 - Modify `doc/superpowers/specs/2026-07-03-workflow-container-developer-design.md`: keep it aligned with implemented file names.
-- Modify `/home/andrey/Projects/marketplace-automation/doc/design/workflow-runtime.md`: remove workflow-container authoring ownership and reference `workflow-container-developer`.
-- Modify `/home/andrey/Projects/<workflow-container-project>/AGENTS.md`: keep only local domain/runtime facts and reference `workflow-container-developer` for common workflow-container authoring rules.
-- Modify `/home/andrey/Projects/<workflow-container-project>/doc/design/<workflow-container-project>.md`: keep domain-specific rules and replace common authoring paragraphs with references to `workflow-container-developer`.
+- Modify `<projects-root>/marketplace-automation/doc/design/workflow-runtime.md`: remove workflow-container authoring ownership and reference `workflow-container-developer`.
+- Modify `<projects-root>/<workflow-container-project>/AGENTS.md`: keep only local domain/runtime facts and reference `workflow-container-developer` for common workflow-container authoring rules.
+- Modify `<projects-root>/<workflow-container-project>/doc/design/<workflow-container-project>.md`: keep domain-specific rules and replace common authoring paragraphs with references to `workflow-container-developer`.
 
 ## Task 1: Bootstrap `workflow-container-developer`
 
@@ -81,8 +81,6 @@ dependencies = [
   "pytest>=8.4.0",
 ]
 
-[project.scripts]
-workflow-container-dev = "workflow_container_developer.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["workflow_container_developer"]
@@ -115,8 +113,8 @@ def main() -> int:
         Process exit code.
     """
 
-    parser = argparse.ArgumentParser(prog="workflow-container-dev")
-    parser.add_argument("--version", action="version", version="workflow-container-dev 0.1.0")
+    parser = argparse.ArgumentParser(prog="python -m workflow_container_developer.cli")
+    parser.add_argument("--version", action="version", version="workflow-container-developer cli 0.1.0")
     parser.parse_args()
     return 0
 ```
@@ -149,7 +147,7 @@ Create `README.md`:
 Developer workspace and reusable authoring contract for workflow-container projects located beside this repository.
 
 ```text
-/home/andrey/Projects/
+<projects-root>/
   workflow-container-developer/
   <workflow-container-project>/
   browser-vpn-runtime/
@@ -162,7 +160,7 @@ The project provides generic CLI tools. Concrete workflow logic stays in the tar
 ## Commands
 
 ```bash
-workflow-container-dev --help
+python -m workflow_container_developer.cli --help
 ```
 
 ## Development
@@ -370,9 +368,9 @@ def main(argv: list[str] | None = None) -> int:
         Process exit code.
     """
 
-    parser = argparse.ArgumentParser(prog="workflow-container-dev")
+    parser = argparse.ArgumentParser(prog="python -m workflow_container_developer.cli")
     parser.add_argument("--developer-path", default=Path.cwd(), type=Path)
-    parser.add_argument("--version", action="version", version="workflow-container-dev 0.1.0")
+    parser.add_argument("--version", action="version", version="workflow-container-developer cli 0.1.0")
     subparser = parser.add_subparsers(dest="command", required=True)
     subparser.add_parser("list")
     args = parser.parse_args(argv)
@@ -643,9 +641,9 @@ git commit -m "Add generic workflow container audit"
 **Files:**
 - Create: `doc/design/workflow-container-authoring.md`
 - Modify: `doc/superpowers/specs/2026-07-03-workflow-container-developer-design.md`
-- Modify: `/home/andrey/Projects/marketplace-automation/doc/design/workflow-runtime.md`
-- Modify: `/home/andrey/Projects/<workflow-container-project>/AGENTS.md`
-- Modify: `/home/andrey/Projects/<workflow-container-project>/doc/design/<workflow-container-project>.md`
+- Modify: `<projects-root>/marketplace-automation/doc/design/workflow-runtime.md`
+- Modify: `<projects-root>/<workflow-container-project>/AGENTS.md`
+- Modify: `<projects-root>/<workflow-container-project>/doc/design/<workflow-container-project>.md`
 
 - [ ] **Step 1: Create authoring design document**
 
@@ -697,7 +695,7 @@ Contract tests for workflow-container projects should verify stage naming, compl
 
 - [ ] **Step 2: Trim platform runtime design**
 
-In `/home/andrey/Projects/marketplace-automation/doc/design/workflow-runtime.md`, keep sections `Назначение`, `Сетевой Контракт`, `secret DataSource`, and `Граница Реализации`. Replace sections `Структура DBOS Workflow Source`, `Контракт Codex Stage`, `Контракт Artifact Materialization`, and related checks with:
+In `<projects-root>/marketplace-automation/doc/design/workflow-runtime.md`, keep sections `Назначение`, `Сетевой Контракт`, `secret DataSource`, and `Граница Реализации`. Replace sections `Структура DBOS Workflow Source`, `Контракт Codex Stage`, `Контракт Artifact Materialization`, and related checks with:
 
 ```markdown
 ## Граница Authoring Contract
@@ -708,7 +706,7 @@ In `/home/andrey/Projects/marketplace-automation/doc/design/workflow-runtime.md`
 
 - [ ] **Step 3: Trim `<workflow-container-project>` instructions**
 
-Replace `/home/andrey/Projects/<workflow-container-project>/AGENTS.md` with:
+Replace `<projects-root>/<workflow-container-project>/AGENTS.md` with:
 
 ```markdown
 # Repository Guidelines
@@ -728,7 +726,7 @@ Replace `/home/andrey/Projects/<workflow-container-project>/AGENTS.md` with:
 
 - [ ] **Step 4: Trim `<workflow-container-project>` design**
 
-In `/home/andrey/Projects/<workflow-container-project>/doc/design/<workflow-container-project>.md`, keep domain sections and replace common production runtime paragraphs about DBOS, `.secret`, Codex sandbox, prompt template placement and artifact materialization with one section:
+In `<projects-root>/<workflow-container-project>/doc/design/<workflow-container-project>.md`, keep domain sections and replace common production runtime paragraphs about DBOS, `.secret`, Codex sandbox, prompt template placement and artifact materialization with one section:
 
 ```markdown
 ## Общий Workflow-Container Contract
@@ -740,7 +738,7 @@ In `/home/andrey/Projects/<workflow-container-project>/doc/design/<workflow-cont
 Run:
 
 ```bash
-rg -n "Структура DBOS Workflow Source|Контракт Codex Stage|Контракт Artifact Materialization" /home/andrey/Projects/marketplace-automation/doc/design/workflow-runtime.md /home/andrey/Projects/<workflow-container-project>/doc/design/<workflow-container-project>.md
+rg -n "Структура DBOS Workflow Source|Контракт Codex Stage|Контракт Artifact Materialization" <projects-root>/marketplace-automation/doc/design/workflow-runtime.md <projects-root>/<workflow-container-project>/doc/design/<workflow-container-project>.md
 ```
 
 Expected: no matches.
@@ -748,28 +746,28 @@ Expected: no matches.
 Run:
 
 ```bash
-rg -n "workflow-container-authoring" /home/andrey/Projects/marketplace-automation/doc/design/workflow-runtime.md /home/andrey/Projects/<workflow-container-project>/AGENTS.md /home/andrey/Projects/<workflow-container-project>/doc/design/<workflow-container-project>.md
+rg -n "workflow-container-authoring" <projects-root>/marketplace-automation/doc/design/workflow-runtime.md <projects-root>/<workflow-container-project>/AGENTS.md <projects-root>/<workflow-container-project>/doc/design/<workflow-container-project>.md
 ```
 
 Expected: matches in all three files.
 
 - [ ] **Step 6: Commit docs in each repository**
 
-Run in `/home/andrey/Projects/workflow-container-developer`:
+Run in `<projects-root>/workflow-container-developer`:
 
 ```bash
 git add doc
 git commit -m "Own workflow container authoring contract"
 ```
 
-Run in `/home/andrey/Projects/marketplace-automation`:
+Run in `<projects-root>/marketplace-automation`:
 
 ```bash
 git add doc/design/workflow-runtime.md
 git commit -m "Reference external workflow authoring contract"
 ```
 
-Run in `/home/andrey/Projects/<workflow-container-project>`:
+Run in `<projects-root>/<workflow-container-project>`:
 
 ```bash
 git add AGENTS.md doc/design/<workflow-container-project>.md
@@ -784,7 +782,7 @@ git commit -m "Keep workflow container docs domain-specific"
 
 - [ ] **Step 1: Run generic CLI against real adjacent target**
 
-Run in `/home/andrey/Projects/workflow-container-developer`:
+Run in `<projects-root>/workflow-container-developer`:
 
 ```bash
 python -m workflow_container_developer.cli list
@@ -794,7 +792,7 @@ python -m workflow_container_developer.cli audit <workflow-container-project>
 Expected:
 
 ```text
-<workflow-container-project>	/home/andrey/Projects/<workflow-container-project>
+<workflow-container-project>	<projects-root>/<workflow-container-project>
 OK <workflow-container-project>
 ```
 
@@ -802,7 +800,7 @@ Additional adjacent workflow-container projects may also appear in `list`; `audi
 
 - [ ] **Step 2: Run target project verification**
 
-Run in `/home/andrey/Projects/<workflow-container-project>`:
+Run in `<projects-root>/<workflow-container-project>`:
 
 ```bash
 python -m pytest -q
@@ -813,7 +811,7 @@ Expected: PASS.
 
 - [ ] **Step 3: Run platform and runtime documentation checks**
 
-Run in `/home/andrey/Projects/marketplace-automation`:
+Run in `<projects-root>/marketplace-automation`:
 
 ```bash
 rg -n "workflow-container-authoring|WorkflowRun|DataSource|DataContainer" doc/design/workflow-runtime.md
@@ -822,7 +820,7 @@ git diff --check
 
 Expected: command exits `0`.
 
-Run in `/home/andrey/Projects/browser-vpn-runtime`:
+Run in `<projects-root>/browser-vpn-runtime`:
 
 ```bash
 python -m pytest -q
@@ -838,8 +836,8 @@ Add to `README.md`:
 ## Typical Flow
 
 ```bash
-workflow-container-dev list
-workflow-container-dev audit <workflow-container-project>
+python -m workflow_container_developer.cli list
+python -m workflow_container_developer.cli audit <workflow-container-project>
 ```
 
 The target name is the adjacent project directory name. The CLI discovers workflow-container projects by `workflow.yaml` and `versions.yaml`; it does not know concrete workflow names.
@@ -847,7 +845,7 @@ The target name is the adjacent project directory name. The CLI discovers workfl
 
 - [ ] **Step 5: Run final verification**
 
-Run in `/home/andrey/Projects/workflow-container-developer`:
+Run in `<projects-root>/workflow-container-developer`:
 
 ```bash
 python -m pytest -q
@@ -876,9 +874,9 @@ git commit -m "Document workflow container developer usage"
 Run:
 
 ```bash
-git -C /home/andrey/Projects/workflow-container-developer push origin main
-git -C /home/andrey/Projects/marketplace-automation push origin main
-git -C /home/andrey/Projects/<workflow-container-project> push origin main
+git -C <projects-root>/workflow-container-developer push origin main
+git -C <projects-root>/marketplace-automation push origin main
+git -C <projects-root>/<workflow-container-project> push origin main
 ```
 
 Expected: all pushes succeed.
@@ -888,8 +886,8 @@ Expected: all pushes succeed.
 For each project with worktrees, run:
 
 ```bash
-git -C /home/andrey/Projects/marketplace-automation worktree list --porcelain
-git -C /home/andrey/Projects/<workflow-container-project> worktree list --porcelain
+git -C <projects-root>/marketplace-automation worktree list --porcelain
+git -C <projects-root>/<workflow-container-project> worktree list --porcelain
 ```
 
 Fast-forward clean worktree branches to their project `main`. Do not reset or overwrite dirty worktrees.
@@ -899,10 +897,10 @@ Fast-forward clean worktree branches to their project `main`. Do not reset or ov
 Run:
 
 ```bash
-git -C /home/andrey/Projects/workflow-container-developer status --short --branch
-git -C /home/andrey/Projects/marketplace-automation status --short --branch
-git -C /home/andrey/Projects/<workflow-container-project> status --short --branch
-git -C /home/andrey/Projects/browser-vpn-runtime status --short --branch
+git -C <projects-root>/workflow-container-developer status --short --branch
+git -C <projects-root>/marketplace-automation status --short --branch
+git -C <projects-root>/<workflow-container-project> status --short --branch
+git -C <projects-root>/browser-vpn-runtime status --short --branch
 ```
 
 Expected: no dirty tracked changes. `main` branches that were changed are aligned with `origin/main`.

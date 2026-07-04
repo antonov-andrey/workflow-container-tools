@@ -58,7 +58,7 @@
 Проекты лежат рядом:
 
 ```text
-/home/andrey/Projects/
+<projects-root>/
   workflow-container-developer/
   <workflow-container-project>/
   browser-vpn-runtime/
