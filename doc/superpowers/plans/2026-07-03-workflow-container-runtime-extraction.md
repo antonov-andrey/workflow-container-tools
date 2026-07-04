@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Extract reusable workflow-container Codex runtime mechanics from `brand-size-chart` into the new sibling `workflow-container-runtime` project and make `brand-size-chart` consume it as a runtime dependency.
+**Goal:** Extract reusable workflow-container Codex runtime mechanics from `<workflow-container-project>` into the new sibling `workflow-container-runtime` project and make `<workflow-container-project>` consume it as a runtime dependency.
 
-**Architecture:** `workflow-container-runtime` owns generic executable runtime code and generic prompt partial resources. `brand-size-chart` keeps domain schemas, workflow orchestration, domain prompts, validators, and size-chart semantics. `workflow-container-developer` owns authoring documentation and generic audits only; it is not imported by runtime containers.
+**Architecture:** `workflow-container-runtime` owns generic executable runtime code and generic prompt partial resources. `<workflow-container-project>` keeps domain schemas, workflow orchestration, domain prompts, validators, and size-chart semantics. `workflow-container-developer` owns authoring documentation and generic audits only; it is not imported by runtime containers.
 
 **Tech Stack:** Python 3.14, Pydantic v2, Jinja2, pytest, Codex CLI, package resources.
 
@@ -32,15 +32,15 @@
 - Create: `/home/andrey/Projects/workflow-container-runtime/workflow_container_runtime/codex/runner.py`
 - Create: `/home/andrey/Projects/workflow-container-runtime/workflow_container_runtime/codex/schema.py`
 - Create: `/home/andrey/Projects/workflow-container-runtime/test/test_codex_runner.py`
-- Modify: `/home/andrey/Projects/brand-size-chart/brand_size_chart/codex/runner.py`
-- Modify: `/home/andrey/Projects/brand-size-chart/brand_size_chart/codex/schema.py`
-- Modify: `/home/andrey/Projects/brand-size-chart/brand_size_chart/codex/__init__.py`
-- Modify: `/home/andrey/Projects/brand-size-chart/brand_size_chart/codex_stage.py`
+- Modify: `/home/andrey/Projects/<workflow-container-project>/<workflow_container_package>/codex/runner.py`
+- Modify: `/home/andrey/Projects/<workflow-container-project>/<workflow_container_package>/codex/schema.py`
+- Modify: `/home/andrey/Projects/<workflow-container-project>/<workflow_container_package>/codex/__init__.py`
+- Modify: `/home/andrey/Projects/<workflow-container-project>/<workflow_container_package>/codex_stage.py`
 
-- [ ] Move generic JSON artifact writing needed by the runner into runtime without importing `brand-size-chart`.
+- [ ] Move generic JSON artifact writing needed by the runner into runtime without importing `<workflow-container-project>`.
 - [ ] Move `CodexStageRunner`, `CodexStageError`, `codex_stage_run`, Codex output schema generation, browser JavaScript/tool validation, subprocess timeout, diagnostics writing, and MCP config construction into runtime.
-- [ ] Parameterize project-specific system prompt text through constructor or `run(...)` arguments so runtime does not contain `brand-size-chart` strings.
-- [ ] Keep `brand-size-chart` compatibility modules as thin import surfaces only when needed by current tests/callers, or migrate all imports directly to runtime and delete obsolete local modules.
+- [ ] Parameterize project-specific system prompt text through constructor or `run(...)` arguments so runtime does not contain `<workflow-container-project>` strings.
+- [ ] Keep `<workflow-container-project>` compatibility modules as thin import surfaces only when needed by current tests/callers, or migrate all imports directly to runtime and delete obsolete local modules.
 - [ ] Add runtime unit tests ported from current runner tests for command construction, browser tool validation, stale diagnostic cleanup, timeout/activity behavior, and schema validation.
 
 ### Task 3: Prompt Resource Extraction
@@ -51,29 +51,29 @@
 - Create: `/home/andrey/Projects/workflow-container-runtime/workflow_container_runtime/prompt/template/partial/artifact_reference_contract.md.j2`
 - Create: `/home/andrey/Projects/workflow-container-runtime/workflow_container_runtime/prompt/template/partial/stage_verification_contract.md.j2`
 - Create: `/home/andrey/Projects/workflow-container-runtime/test/test_prompt_renderer.py`
-- Modify: `/home/andrey/Projects/brand-size-chart/brand_size_chart/prompt/renderer.py`
-- Modify: `/home/andrey/Projects/brand-size-chart/brand_size_chart/prompt/template/*.md.j2`
-- Delete: `/home/andrey/Projects/brand-size-chart/brand_size_chart/prompt/template/partial/runtime_source_access.md.j2`
-- Delete: `/home/andrey/Projects/brand-size-chart/brand_size_chart/prompt/template/partial/artifact_reference_contract.md.j2`
+- Modify: `/home/andrey/Projects/<workflow-container-project>/<workflow_container_package>/prompt/renderer.py`
+- Modify: `/home/andrey/Projects/<workflow-container-project>/<workflow_container_package>/prompt/template/*.md.j2`
+- Delete: `/home/andrey/Projects/<workflow-container-project>/<workflow_container_package>/prompt/template/partial/runtime_source_access.md.j2`
+- Delete: `/home/andrey/Projects/<workflow-container-project>/<workflow_container_package>/prompt/template/partial/artifact_reference_contract.md.j2`
 
 - [ ] Add a runtime Jinja2 renderer that loads runtime package templates and project template directories together with `StrictUndefined`.
 - [ ] Move generic source-access and artifact-reference partials to runtime package resources.
-- [ ] Add a generic verification preamble partial in runtime and update `brand-size-chart` verification templates to include it before domain-specific checks.
-- [ ] Leave `size_group_key_contract.md.j2` and `stage_retry_context.md.j2` in `brand-size-chart` because they are domain/stage-specific.
-- [ ] Update tests to assert generic partials are no longer local to `brand-size-chart` and render through runtime resources.
+- [ ] Add a generic verification preamble partial in runtime and update `<workflow-container-project>` verification templates to include it before domain-specific checks.
+- [ ] Leave `size_group_key_contract.md.j2` and `stage_retry_context.md.j2` in `<workflow-container-project>` because they are domain/stage-specific.
+- [ ] Update tests to assert generic partials are no longer local to `<workflow-container-project>` and render through runtime resources.
 
 ### Task 4: Dependency Wiring And Documentation
 
 **Files:**
-- Modify: `/home/andrey/Projects/brand-size-chart/pyproject.toml`
-- Modify: `/home/andrey/Projects/brand-size-chart/AGENTS.md`
-- Modify: `/home/andrey/Projects/brand-size-chart/doc/design/brand-size-chart.md`
+- Modify: `/home/andrey/Projects/<workflow-container-project>/pyproject.toml`
+- Modify: `/home/andrey/Projects/<workflow-container-project>/AGENTS.md`
+- Modify: `/home/andrey/Projects/<workflow-container-project>/doc/design/<workflow-container-project>.md`
 - Modify: `/home/andrey/Projects/workflow-container-developer/doc/design/workflow-container-authoring.md`
 - Modify: `/home/andrey/Projects/workflow-container-developer/workflow_container_developer/audit.py`
 - Modify: `/home/andrey/Projects/workflow-container-developer/test/test_audit.py`
 
-- [ ] Add `workflow-container-runtime` as an explicit `brand-size-chart` dependency through a pinned Git commit dependency.
-- [ ] Update `brand-size-chart` instructions/design so generic Codex runtime and generic prompt partials belong to `workflow-container-runtime`, not to the domain project.
+- [ ] Add `workflow-container-runtime` as an explicit `<workflow-container-project>` dependency through a pinned Git commit dependency.
+- [ ] Update `<workflow-container-project>` instructions/design so generic Codex runtime and generic prompt partials belong to `workflow-container-runtime`, not to the domain project.
 - [ ] Update `workflow-container-developer` design to describe runtime dependency ownership and forbid importing developer tooling from runtime containers.
 - [ ] Extend developer audit to warn when a workflow-container has local copies of runtime-owned generic prompt partials or local implementation of `CodexStageRunner`.
 
@@ -83,7 +83,7 @@
 - Test all changed projects.
 
 - [ ] Run runtime tests: `cd /home/andrey/Projects/workflow-container-runtime && python -m pytest -q && python -m compileall workflow_container_runtime`.
-- [ ] Run brand tests: `cd /home/andrey/Projects/brand-size-chart && python -m pytest -q && python -m compileall brand_size_chart`.
-- [ ] Run developer tests and audit: `cd /home/andrey/Projects/workflow-container-developer && python -m pytest -q && python -c 'import workflow_container_developer.cli as cli; raise SystemExit(cli.main(["audit", "brand-size-chart"]))'`.
-- [ ] Run targeted prompt rendering tests in `brand-size-chart` and import smoke checks proving `brand-size-chart` imports runtime package code.
+- [ ] Run brand tests: `cd /home/andrey/Projects/<workflow-container-project> && python -m pytest -q && python -m compileall <workflow_container_package>`.
+- [ ] Run developer tests and audit: `cd /home/andrey/Projects/workflow-container-developer && python -m pytest -q && python -c 'import workflow_container_developer.cli as cli; raise SystemExit(cli.main(["audit", "<workflow-container-project>"]))'`.
+- [ ] Run targeted prompt rendering tests in `<workflow-container-project>` and import smoke checks proving `<workflow-container-project>` imports runtime package code.
 - [ ] Report any skipped real external workflow run explicitly; this change is runtime extraction, so unit/contract verification is the required direct check unless the user separately requests a full Defacto production run.

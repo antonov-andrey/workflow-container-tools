@@ -43,7 +43,7 @@
 `browser-vpn-runtime` не должен знать доменную логику workflow-container проектов. Он предоставляет runtime capability, а не authoring contract и не workflow orchestration.
 
 ### Конкретный Workflow-Container Project
-Один workflow-container project, например `brand-size-chart`, владеет своей domain task и production workflow source:
+Один workflow-container project владеет своей domain task и production workflow source:
 
 - `workflow.yaml`;
 - `versions.yaml`;
@@ -60,7 +60,7 @@
 ```text
 /home/andrey/Projects/
   workflow-container-developer/
-  brand-size-chart/
+  <workflow-container-project>/
   browser-vpn-runtime/
   marketplace-automation/
   <other-workflow-container>/
@@ -80,10 +80,10 @@ CLI-инструменты `workflow-container-developer` должны быть 
 - validate that target project does not duplicate common authoring rules that belong to `workflow-container-developer`;
 - run local workflow smoke command only when the target project declares a standard local run command.
 
-CLI-инструменты не должны содержать branches such as `if project == "brand-size-chart"`. Project-specific commands must be declared by the target project in its own config or documentation and consumed generically.
+CLI-инструменты не должны содержать branches such as `if project == "<workflow-container-project>"`. Project-specific commands must be declared by the target project in its own config or documentation and consumed generically.
 
 ## Общий Authoring Contract
-`doc/design/workflow-container-authoring.md` должен владеть общими правилами, которые сейчас частично разложены по `marketplace-automation` и `brand-size-chart`:
+`doc/design/workflow-container-authoring.md` должен владеть общими правилами, которые сейчас частично разложены по `marketplace-automation` и target workflow-container projects:
 
 - `DBOS` workflow source structure;
 - stateless `@DBOS.dbos_class` workflow and step owners;
@@ -111,19 +111,19 @@ CLI-инструменты не должны содержать branches such as
 
 - из `marketplace-automation/doc/design/workflow-runtime.md` в `workflow-container-developer` переносятся authoring rules для `DBOS`, `Codex` stage, prompt templates, validation и artifact materialization;
 - в `marketplace-automation/doc/design/workflow-runtime.md` остаются только platform runtime rules: network boundary, `WorkflowRun`, `DataSource`, `DataContainer`, runtime capabilities, terminal result and input writeback;
-- из `brand-size-chart/doc/design/brand-size-chart.md` в `workflow-container-developer` выносятся общие правила workflow-container authoring;
-- в `brand-size-chart/doc/design/brand-size-chart.md` остаются только domain-specific правила загрузчика таблиц размеров;
-- `brand-size-chart/AGENTS.md` остается project-local and domain-specific, а общие правила контейнерной разработки заменяются ссылкой на `workflow-container-developer` contract.
+- из `<workflow-container-project>/doc/design/<workflow-container-project>.md` в `workflow-container-developer` выносятся общие правила workflow-container authoring;
+- в `<workflow-container-project>/doc/design/<workflow-container-project>.md` остаются только domain-specific правила загрузчика таблиц размеров;
+- `<workflow-container-project>/AGENTS.md` остается project-local and domain-specific, а общие правила контейнерной разработки заменяются ссылкой на `workflow-container-developer` contract.
 
 ## Проверка Границ
 После рефакторинга должны выполняться следующие проверки:
 
-- `workflow-container-developer` не содержит hardcoded `brand-size-chart` logic;
-- `brand-size-chart` не импортирует, не вызывает и не требует `workflow-container-developer` для production run;
+- `workflow-container-developer` не содержит hardcoded target-project logic;
+- `<workflow-container-project>` не импортирует, не вызывает и не требует `workflow-container-developer` для production run;
 - `marketplace-automation` не описывает внутреннюю реализацию `Codex` stages и semantic validators конкретного workflow-container;
 - `browser-vpn-runtime` не содержит domain workflow logic;
-- generic CLI-инструменты `workflow-container-developer` могут работать с `brand-size-chart` как с target project only through declared target project files and commands;
-- текущие тесты `brand-size-chart`, `browser-vpn-runtime` и `marketplace-automation` остаются зелеными после переноса ownership.
+- generic CLI-инструменты `workflow-container-developer` могут работать с `<workflow-container-project>` как с target project only through declared target project files and commands;
+- текущие тесты `<workflow-container-project>`, `browser-vpn-runtime` и `marketplace-automation` остаются зелеными после переноса ownership.
 
 ## Не Входит В Эту Спецификацию
 Эта спецификация не требует:
@@ -131,6 +131,6 @@ CLI-инструменты не должны содержать branches such as
 - реализации нового workflow-container domain project;
 - изменения production deployment model `marketplace-automation`;
 - изменения browser/VPN runtime behavior;
-- переписывания domain logic `brand-size-chart`;
+- переписывания domain logic `<workflow-container-project>`;
 - автоматического подключения `workflow-container-developer` как submodule к другим проектам;
 - runtime-зависимости workflow-container projects от `workflow-container-developer`.

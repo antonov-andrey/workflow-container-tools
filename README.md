@@ -5,10 +5,9 @@ Developer workspace and reusable authoring contract for workflow-container proje
 ```text
 /home/andrey/Projects/
   workflow-container-developer/
-  brand-size-chart/
   browser-vpn-runtime/
   marketplace-automation/
-  <other-workflow-container>/
+  <workflow-container-project>/
 ```
 
 The project provides generic CLI tools. Concrete workflow logic stays in the target workflow-container project.
@@ -23,7 +22,7 @@ workflow-container-dev --help
 
 ```bash
 workflow-container-dev list
-workflow-container-dev audit brand-size-chart
+workflow-container-dev audit <workflow-container-project>
 ```
 
 The target name is the adjacent project directory name. The CLI discovers workflow-container projects by `workflow.yaml` and `versions.yaml`; it does not know concrete workflow names.

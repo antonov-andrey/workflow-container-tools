@@ -4,7 +4,7 @@
 
 **Goal:** Build `workflow-container-developer` as the shared authoring workspace and generic CLI/tooling owner for adjacent workflow-container projects.
 
-**Architecture:** `workflow-container-developer` owns only reusable authoring contracts and generic developer tools. `marketplace-automation` keeps platform runtime contracts, `browser-vpn-runtime` keeps browser/VPN runtime contracts, and each workflow-container keeps only its domain-specific workflow logic and local specialization. The CLI scans adjacent projects through declared markers such as `workflow.yaml` and `versions.yaml`; it must not hardcode names such as `brand-size-chart`.
+**Architecture:** `workflow-container-developer` owns only reusable authoring contracts and generic developer tools. `marketplace-automation` keeps platform runtime contracts, `browser-vpn-runtime` keeps browser/VPN runtime contracts, and each workflow-container keeps only its domain-specific workflow logic and local specialization. The CLI scans adjacent projects through declared markers such as `workflow.yaml` and `versions.yaml`; it must not hardcode target project names.
 
 **Tech Stack:** Python 3.14, pytest, PyYAML, standard-library `argparse`, standard-library `dataclasses`, Markdown design docs.
 
@@ -23,8 +23,8 @@
 - Create `doc/design/workflow-container-authoring.md`: canonical reusable workflow-container authoring contract.
 - Modify `doc/superpowers/specs/2026-07-03-workflow-container-developer-design.md`: keep it aligned with implemented file names.
 - Modify `/home/andrey/Projects/marketplace-automation/doc/design/workflow-runtime.md`: remove workflow-container authoring ownership and reference `workflow-container-developer`.
-- Modify `/home/andrey/Projects/brand-size-chart/AGENTS.md`: keep only local domain/runtime facts and reference `workflow-container-developer` for common workflow-container authoring rules.
-- Modify `/home/andrey/Projects/brand-size-chart/doc/design/brand-size-chart.md`: keep domain-specific rules and replace common authoring paragraphs with references to `workflow-container-developer`.
+- Modify `/home/andrey/Projects/<workflow-container-project>/AGENTS.md`: keep only local domain/runtime facts and reference `workflow-container-developer` for common workflow-container authoring rules.
+- Modify `/home/andrey/Projects/<workflow-container-project>/doc/design/<workflow-container-project>.md`: keep domain-specific rules and replace common authoring paragraphs with references to `workflow-container-developer`.
 
 ## Task 1: Bootstrap `workflow-container-developer`
 
@@ -132,7 +132,7 @@ Create `AGENTS.md`:
 - This project owns reusable authoring instructions, design contracts and generic CLI tooling for adjacent workflow-container projects.
 - This project is not a runtime dependency of concrete workflow-container projects.
 - Generic tooling must discover target workflow-container projects through declared project files such as `workflow.yaml` and `versions.yaml`.
-- Hardcoding concrete target names such as `brand-size-chart` in product code is forbidden.
+- Hardcoding concrete target project names in product code is forbidden.
 - Target-specific workflow logic, source types, prompts and validators belong only to the target workflow-container project.
 
 ## Python
@@ -151,7 +151,7 @@ Developer workspace and reusable authoring contract for workflow-container proje
 ```text
 /home/andrey/Projects/
   workflow-container-developer/
-  brand-size-chart/
+  <workflow-container-project>/
   browser-vpn-runtime/
   marketplace-automation/
   <other-workflow-container>/
@@ -644,8 +644,8 @@ git commit -m "Add generic workflow container audit"
 - Create: `doc/design/workflow-container-authoring.md`
 - Modify: `doc/superpowers/specs/2026-07-03-workflow-container-developer-design.md`
 - Modify: `/home/andrey/Projects/marketplace-automation/doc/design/workflow-runtime.md`
-- Modify: `/home/andrey/Projects/brand-size-chart/AGENTS.md`
-- Modify: `/home/andrey/Projects/brand-size-chart/doc/design/brand-size-chart.md`
+- Modify: `/home/andrey/Projects/<workflow-container-project>/AGENTS.md`
+- Modify: `/home/andrey/Projects/<workflow-container-project>/doc/design/<workflow-container-project>.md`
 
 - [ ] **Step 1: Create authoring design document**
 
@@ -706,33 +706,33 @@ In `/home/andrey/Projects/marketplace-automation/doc/design/workflow-runtime.md`
 `marketplace-automation` проверяет только platform-facing contract: `workflow.yaml`, snapshots `DataSource`, output `DataContainer`, runtime capabilities, terminal result, input writeback и статус `WorkflowRun`.
 ```
 
-- [ ] **Step 3: Trim `brand-size-chart` instructions**
+- [ ] **Step 3: Trim `<workflow-container-project>` instructions**
 
-Replace `/home/andrey/Projects/brand-size-chart/AGENTS.md` with:
+Replace `/home/andrey/Projects/<workflow-container-project>/AGENTS.md` with:
 
 ```markdown
 # Repository Guidelines
 
 ## Scope
-- This project owns the `brand-size-chart` workflow-container domain logic.
+- This project owns the `<workflow-container-project>` workflow-container domain logic.
 - Shared workflow-container authoring rules belong to `workflow-container-developer/doc/design/workflow-container-authoring.md`.
 - Browser/VPN runtime behavior belongs to `browser-vpn-runtime`.
 - This project must not depend on `workflow-container-developer` at runtime.
 
-## Brand Size Chart Domain
-- Runtime chart output lives under `brand_size_chart/brand/<parsed_brand_key>/`.
-- Audit output lives under `brand_size_chart_audit/brand/<parsed_brand_key>/`.
-- Static prompts live under `brand_size_chart/prompt/template/` with shared partials under `brand_size_chart/prompt/template/partial/`.
-- Root-level Markdown prompt copies under `brand_size_chart/prompt/*.md` are forbidden.
+## Workflow Container Domain
+- Runtime chart output lives under `<workflow_container_package>/brand/<parsed_brand_key>/`.
+- Audit output lives under `<workflow_container_package>_audit/brand/<parsed_brand_key>/`.
+- Static prompts live under `<workflow_container_package>/prompt/template/` with shared partials under `<workflow_container_package>/prompt/template/partial/`.
+- Root-level Markdown prompt copies under `<workflow_container_package>/prompt/*.md` are forbidden.
 ```
 
-- [ ] **Step 4: Trim `brand-size-chart` design**
+- [ ] **Step 4: Trim `<workflow-container-project>` design**
 
-In `/home/andrey/Projects/brand-size-chart/doc/design/brand-size-chart.md`, keep domain sections and replace common production runtime paragraphs about DBOS, `.secret`, Codex sandbox, prompt template placement and artifact materialization with one section:
+In `/home/andrey/Projects/<workflow-container-project>/doc/design/<workflow-container-project>.md`, keep domain sections and replace common production runtime paragraphs about DBOS, `.secret`, Codex sandbox, prompt template placement and artifact materialization with one section:
 
 ```markdown
 ## Общий Workflow-Container Contract
-Общие правила `DBOS` workflow source, action/verification stage loop, prompt templates, schema validation, artifact materialization and browser runtime boundary belong to `workflow-container-developer/doc/design/workflow-container-authoring.md`. This document defines only `brand-size-chart` domain behavior: source types, source discovery semantics, table extraction semantics, `size_group_key`, mechanical domain guards and output paths.
+Общие правила `DBOS` workflow source, action/verification stage loop, prompt templates, schema validation, artifact materialization and browser runtime boundary belong to `workflow-container-developer/doc/design/workflow-container-authoring.md`. This document defines only `<workflow-container-project>` domain behavior: source types, source discovery semantics, table extraction semantics, `size_group_key`, mechanical domain guards and output paths.
 ```
 
 - [ ] **Step 5: Run semantic text checks**
@@ -740,7 +740,7 @@ In `/home/andrey/Projects/brand-size-chart/doc/design/brand-size-chart.md`, keep
 Run:
 
 ```bash
-rg -n "Структура DBOS Workflow Source|Контракт Codex Stage|Контракт Artifact Materialization" /home/andrey/Projects/marketplace-automation/doc/design/workflow-runtime.md /home/andrey/Projects/brand-size-chart/doc/design/brand-size-chart.md
+rg -n "Структура DBOS Workflow Source|Контракт Codex Stage|Контракт Artifact Materialization" /home/andrey/Projects/marketplace-automation/doc/design/workflow-runtime.md /home/andrey/Projects/<workflow-container-project>/doc/design/<workflow-container-project>.md
 ```
 
 Expected: no matches.
@@ -748,7 +748,7 @@ Expected: no matches.
 Run:
 
 ```bash
-rg -n "workflow-container-authoring" /home/andrey/Projects/marketplace-automation/doc/design/workflow-runtime.md /home/andrey/Projects/brand-size-chart/AGENTS.md /home/andrey/Projects/brand-size-chart/doc/design/brand-size-chart.md
+rg -n "workflow-container-authoring" /home/andrey/Projects/marketplace-automation/doc/design/workflow-runtime.md /home/andrey/Projects/<workflow-container-project>/AGENTS.md /home/andrey/Projects/<workflow-container-project>/doc/design/<workflow-container-project>.md
 ```
 
 Expected: matches in all three files.
@@ -769,14 +769,14 @@ git add doc/design/workflow-runtime.md
 git commit -m "Reference external workflow authoring contract"
 ```
 
-Run in `/home/andrey/Projects/brand-size-chart`:
+Run in `/home/andrey/Projects/<workflow-container-project>`:
 
 ```bash
-git add AGENTS.md doc/design/brand-size-chart.md
-git commit -m "Keep brand size chart docs domain-specific"
+git add AGENTS.md doc/design/<workflow-container-project>.md
+git commit -m "Keep workflow container docs domain-specific"
 ```
 
-## Task 5: Generic Verification Against `brand-size-chart`
+## Task 5: Generic Verification Against `<workflow-container-project>`
 
 **Files:**
 - Modify: `README.md`
@@ -788,25 +788,25 @@ Run in `/home/andrey/Projects/workflow-container-developer`:
 
 ```bash
 python -m workflow_container_developer.cli list
-python -m workflow_container_developer.cli audit brand-size-chart
+python -m workflow_container_developer.cli audit <workflow-container-project>
 ```
 
 Expected:
 
 ```text
-brand-size-chart	/home/andrey/Projects/brand-size-chart
-OK brand-size-chart
+<workflow-container-project>	/home/andrey/Projects/<workflow-container-project>
+OK <workflow-container-project>
 ```
 
-Additional adjacent workflow-container projects may also appear in `list`; `audit brand-size-chart` must exit `0`.
+Additional adjacent workflow-container projects may also appear in `list`; `audit <workflow-container-project>` must exit `0`.
 
 - [ ] **Step 2: Run target project verification**
 
-Run in `/home/andrey/Projects/brand-size-chart`:
+Run in `/home/andrey/Projects/<workflow-container-project>`:
 
 ```bash
 python -m pytest -q
-python -m compileall brand_size_chart
+python -m compileall <workflow_container_package>
 ```
 
 Expected: PASS.
@@ -839,7 +839,7 @@ Add to `README.md`:
 
 ```bash
 workflow-container-dev list
-workflow-container-dev audit brand-size-chart
+workflow-container-dev audit <workflow-container-project>
 ```
 
 The target name is the adjacent project directory name. The CLI discovers workflow-container projects by `workflow.yaml` and `versions.yaml`; it does not know concrete workflow names.
@@ -878,7 +878,7 @@ Run:
 ```bash
 git -C /home/andrey/Projects/workflow-container-developer push origin main
 git -C /home/andrey/Projects/marketplace-automation push origin main
-git -C /home/andrey/Projects/brand-size-chart push origin main
+git -C /home/andrey/Projects/<workflow-container-project> push origin main
 ```
 
 Expected: all pushes succeed.
@@ -889,7 +889,7 @@ For each project with worktrees, run:
 
 ```bash
 git -C /home/andrey/Projects/marketplace-automation worktree list --porcelain
-git -C /home/andrey/Projects/brand-size-chart worktree list --porcelain
+git -C /home/andrey/Projects/<workflow-container-project> worktree list --porcelain
 ```
 
 Fast-forward clean worktree branches to their project `main`. Do not reset or overwrite dirty worktrees.
@@ -901,9 +901,8 @@ Run:
 ```bash
 git -C /home/andrey/Projects/workflow-container-developer status --short --branch
 git -C /home/andrey/Projects/marketplace-automation status --short --branch
-git -C /home/andrey/Projects/brand-size-chart status --short --branch
+git -C /home/andrey/Projects/<workflow-container-project> status --short --branch
 git -C /home/andrey/Projects/browser-vpn-runtime status --short --branch
 ```
 
 Expected: no dirty tracked changes. `main` branches that were changed are aligned with `origin/main`.
-
