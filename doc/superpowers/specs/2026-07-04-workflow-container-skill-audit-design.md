@@ -15,7 +15,7 @@ The installable plugin remains `workflow-container-tools`.
 
 The existing skill `workflow-container-developer` remains responsible for workflow-container creation, modification, refactoring, and design work.
 
-The new skill `workflow-container-audit` owns semantic review of workflow-container instruction artifacts. It must not be a wrapper around `workflow_container_developer.audit` or any static checker.
+The new skill `workflow-container-audit` owns semantic review of workflow-container instruction artifacts. It must not be a wrapper around any Python CLI command or static checker.
 
 The Python CLI in `workflow-container-developer` may remain an optional local helper, but it is not the canonical instruction audit and must not be presented as the quality gate for workflow-container instructions.
 
@@ -100,7 +100,7 @@ The audit skill must not reduce review to regex checks, mandatory heading checks
 
 This change does not add scaffold scripts.
 
-This change does not make `workflow_container_developer.audit` the canonical audit.
+This change does not make any Python CLI command the canonical audit.
 
 This change does not require all prompts to use identical headings.
 

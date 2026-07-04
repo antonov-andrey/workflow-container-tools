@@ -23,7 +23,7 @@ workflow-container-developer/
 
 The marketplace name is `workflow-container-tools`. The installable plugin is `workflow-container-tools`. Current skills inside that plugin are `workflow-container-developer` and `workflow-container-audit`. Future workflow-container skills should be added under the same plugin at `plugins/workflow-container-tools/skills/`.
 
-The repository also contains optional Python CLI helper code for local project discovery while developing this plugin and adjacent workflow-container projects. Codex plugin installation does not install that Python CLI. Concrete workflow logic stays in the target workflow-container project.
+The repository also contains optional Python CLI helper code for local project discovery while developing this plugin and adjacent workflow-container projects. Codex plugin installation does not install that Python CLI. Concrete workflow logic stays in the target workflow-container project, and semantic instruction review stays in the `workflow-container-audit` skill.
 
 ## Local Plugin Install
 
@@ -74,7 +74,7 @@ python -m workflow_container_developer.cli list
 
 The `list` command discovers adjacent workflow-container projects by `workflow.yaml` and `versions.yaml`; it does not know concrete workflow names.
 
-The Python CLI is only a local helper. Canonical workflow-container instruction review is the semantic `workflow-container-audit` skill, not the Python CLI.
+The Python CLI is only a local helper for discovery. Canonical workflow-container instruction review is the semantic `workflow-container-audit` skill, not a Python subcommand in this repository.
 
 ## Development
 

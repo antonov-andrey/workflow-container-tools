@@ -119,7 +119,7 @@ description: Use when semantically auditing workflow-container instructions, pro
 
 # Workflow Container Audit
 
-Use this skill to semantically audit workflow-container instruction artifacts. This skill is not a wrapper around `workflow_container_developer.audit` or any static checker.
+Use this skill to semantically audit workflow-container instruction artifacts. This skill is not a wrapper around any Python CLI command or static checker.
 
 ## Required Reading
 

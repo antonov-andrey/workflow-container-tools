@@ -27,5 +27,6 @@ Before changing workflow contracts, prompt contracts, artifact layout, runtime b
    - describe recovery next steps near the failure mode that triggers them,
    - avoid broad suggestions when an exact action or transition is required.
 5. Do not require a fixed set of headings for every prompt. Require the instruction form that matches the prompt's role.
+6. Use the semantic `workflow-container-audit` skill for instruction audits; do not require a Python CLI audit command from this repository.
 
 Do not add `workflow-container-developer` as a production runtime dependency of a concrete workflow-container project.
