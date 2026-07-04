@@ -4,6 +4,19 @@ from pathlib import Path
 
 from workflow_container_developer.cli import main
 
+AUTHORING_DESIGN_REFERENCE = (
+    "workflow-container-developer plugin reference `references/workflow-container-authoring.md`"
+)
+PYPROJECT_TEXT = """\
+[project]
+name = "sample-container"
+requires-python = ">=3.14"
+
+[tool.black]
+target-version = ["py314"]
+line-length = 120
+"""
+
 
 def _target_create(tmp_path: Path) -> tuple[Path, Path]:
     """Create a developer checkout and adjacent workflow-container target.
@@ -21,9 +34,14 @@ def _target_create(tmp_path: Path) -> tuple[Path, Path]:
     target_path.mkdir()
     (target_path / "workflow.yaml").write_text("name: sample\ncommand:\n  - sample-run\n", encoding="utf-8")
     (target_path / "versions.yaml").write_text("project: sample\nversion: 0.1.0\n", encoding="utf-8")
-    (target_path / "AGENTS.md").write_text("# Repository Guidelines\n", encoding="utf-8")
+    (target_path / "AGENTS.md").write_text(
+        f"# Repository Guidelines\n\nSee `{AUTHORING_DESIGN_REFERENCE}`.\n", encoding="utf-8"
+    )
+    (target_path / "pyproject.toml").write_text(PYPROJECT_TEXT, encoding="utf-8")
     (target_path / "doc" / "design").mkdir(parents=True)
-    (target_path / "doc" / "design" / "sample.md").write_text("# Sample\n", encoding="utf-8")
+    (target_path / "doc" / "design" / "sample.md").write_text(
+        f"# Sample\n\nShared rules: `{AUTHORING_DESIGN_REFERENCE}`.\n", encoding="utf-8"
+    )
     return developer_path, target_path
 
 
@@ -74,7 +92,10 @@ def test_cli_audit_reports_warnings(tmp_path: Path, capsys) -> None:
     assert main(["--developer-path", str(developer_path), "audit", "sample-container"]) == 0
 
     captured = capsys.readouterr()
-    assert "WARNING Root-level prompt markdown file found at workflow_module/prompt/duplicate.md; use template tree" in captured.out
+    assert (
+        "WARNING Root-level prompt markdown file found at workflow_module/prompt/duplicate.md; use template tree"
+        in captured.out
+    )
     assert "OK sample-container" in captured.out
 
 

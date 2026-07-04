@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "workflow-container-developer"
 version = "0.1.0"
-description = "Developer workspace and generic tooling for adjacent workflow-container projects"
+description = "Codex plugin marketplace and generic tooling for workflow-container projects"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
@@ -13,12 +13,13 @@ dependencies = [
   "pytest>=8.4.0",
 ]
 
-[project.scripts]
-workflow-container-dev = "workflow_container_developer.cli:main"
-
 [tool.hatch.build.targets.wheel]
 packages = ["workflow_container_developer"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["test"]
+
+[tool.black]
+target-version = ["py314"]
+line-length = 120

@@ -17,9 +17,9 @@ def main(argv: list[str] | None = None) -> int:
         Process exit code.
     """
 
-    parser = argparse.ArgumentParser(prog="workflow-container-dev")
+    parser = argparse.ArgumentParser(prog="python -m workflow_container_developer.cli")
     parser.add_argument("--developer-path", default=Path.cwd(), type=Path)
-    parser.add_argument("--version", action="version", version="workflow-container-dev 0.1.0")
+    parser.add_argument("--version", action="version", version="workflow-container-developer cli 0.1.0")
     subparser = parser.add_subparsers(dest="command", required=True)
     audit_parser = subparser.add_parser("audit")
     audit_parser.add_argument("target")

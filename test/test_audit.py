@@ -5,6 +5,19 @@ from pathlib import Path
 from workflow_container_developer.audit import WorkflowContainerAudit
 from workflow_container_developer.project import WorkflowContainerProject
 
+AUTHORING_DESIGN_REFERENCE = (
+    "workflow-container-developer plugin reference `references/workflow-container-authoring.md`"
+)
+PYPROJECT_TEXT = """\
+[project]
+name = "target"
+requires-python = ">=3.14"
+
+[tool.black]
+target-version = ["py314"]
+line-length = 120
+"""
+
 
 def _target_create(tmp_path: Path) -> Path:
     """Create a target workflow-container fixture.
@@ -20,9 +33,14 @@ def _target_create(tmp_path: Path) -> Path:
     target_path.mkdir()
     (target_path / "workflow.yaml").write_text("name: target\ncommand:\n  - target-run\n", encoding="utf-8")
     (target_path / "versions.yaml").write_text("project: target\nversion: 0.1.0\n", encoding="utf-8")
-    (target_path / "AGENTS.md").write_text("# Repository Guidelines\n", encoding="utf-8")
+    (target_path / "AGENTS.md").write_text(
+        f"# Repository Guidelines\n\nSee `{AUTHORING_DESIGN_REFERENCE}`.\n", encoding="utf-8"
+    )
+    (target_path / "pyproject.toml").write_text(PYPROJECT_TEXT, encoding="utf-8")
     (target_path / "doc" / "design").mkdir(parents=True)
-    (target_path / "doc" / "design" / "target.md").write_text("# Target\n", encoding="utf-8")
+    (target_path / "doc" / "design" / "target.md").write_text(
+        f"# Target\n\nShared rules: `{AUTHORING_DESIGN_REFERENCE}`.\n", encoding="utf-8"
+    )
     return target_path
 
 
@@ -61,6 +79,86 @@ def test_audit_result_fails_when_design_document_missing(tmp_path: Path) -> None
 
     assert not result.is_ok
     assert "Missing doc/design/*.md" in result.error_list
+
+
+def test_audit_result_fails_when_design_reference_missing(tmp_path: Path) -> None:
+    """Report design documents that do not link to the shared authoring baseline."""
+
+    target_path = _target_create(tmp_path)
+    (target_path / "doc" / "design" / "target.md").write_text("# Target\n", encoding="utf-8")
+
+    result = WorkflowContainerAudit(project=_target_project_get(target_path)).result_get()
+
+    assert not result.is_ok
+    assert f"doc/design/*.md must reference {AUTHORING_DESIGN_REFERENCE}" in result.error_list
+
+
+def test_audit_result_fails_when_instruction_reference_missing(tmp_path: Path) -> None:
+    """Report project instructions that do not link to the shared authoring baseline."""
+
+    target_path = _target_create(tmp_path)
+    (target_path / "AGENTS.md").write_text("# Repository Guidelines\n", encoding="utf-8")
+
+    result = WorkflowContainerAudit(project=_target_project_get(target_path)).result_get()
+
+    assert not result.is_ok
+    assert f"AGENTS.md must reference {AUTHORING_DESIGN_REFERENCE}" in result.error_list
+
+
+def test_audit_result_fails_when_pyproject_black_config_missing(tmp_path: Path) -> None:
+    """Report missing Black baseline configuration."""
+
+    target_path = _target_create(tmp_path)
+    (target_path / "pyproject.toml").write_text(
+        '[project]\nname = "target"\nrequires-python = ">=3.14"\n', encoding="utf-8"
+    )
+
+    result = WorkflowContainerAudit(project=_target_project_get(target_path)).result_get()
+
+    assert not result.is_ok
+    assert "pyproject.toml missing [tool.black]" in result.error_list
+
+
+def test_audit_result_fails_when_pyproject_python_version_differs(tmp_path: Path) -> None:
+    """Report Python version drift from the shared baseline."""
+
+    target_path = _target_create(tmp_path)
+    (target_path / "pyproject.toml").write_text(
+        PYPROJECT_TEXT.replace('requires-python = ">=3.14"', 'requires-python = ">=3.13"'), encoding="utf-8"
+    )
+
+    result = WorkflowContainerAudit(project=_target_project_get(target_path)).result_get()
+
+    assert not result.is_ok
+    assert 'pyproject.toml project.requires-python must be ">=3.14"' in result.error_list
+
+
+def test_audit_result_fails_when_pyproject_black_line_length_differs(tmp_path: Path) -> None:
+    """Report Black line-length drift from the shared baseline."""
+
+    target_path = _target_create(tmp_path)
+    (target_path / "pyproject.toml").write_text(
+        PYPROJECT_TEXT.replace("line-length = 120", "line-length = 88"), encoding="utf-8"
+    )
+
+    result = WorkflowContainerAudit(project=_target_project_get(target_path)).result_get()
+
+    assert not result.is_ok
+    assert "pyproject.toml tool.black.line-length must be 120" in result.error_list
+
+
+def test_audit_result_fails_when_pyproject_black_target_differs(tmp_path: Path) -> None:
+    """Report Black target-version drift from the shared baseline."""
+
+    target_path = _target_create(tmp_path)
+    (target_path / "pyproject.toml").write_text(
+        PYPROJECT_TEXT.replace('target-version = ["py314"]', 'target-version = ["py313"]'), encoding="utf-8"
+    )
+
+    result = WorkflowContainerAudit(project=_target_project_get(target_path)).result_get()
+
+    assert not result.is_ok
+    assert 'pyproject.toml tool.black.target-version must be ["py314"]' in result.error_list
 
 
 def test_audit_result_fails_when_workflow_yaml_has_no_command(tmp_path: Path) -> None:
