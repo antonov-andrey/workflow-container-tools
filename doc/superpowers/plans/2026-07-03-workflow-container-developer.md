@@ -680,7 +680,7 @@ Generated artifacts принадлежат текущему stage. Они соз
 
 External artifact references указывают на файлы, созданные другой run-owned системой или предыдущим stage. Codex-backed action stage не должен копировать такие файлы. Он должен вернуть references в своем schema-valid result.
 
-`Workflow Source` должен иметь generic artifact materialization layer. Этот layer получает references из validated stage result, проверяет принадлежность каждого source path разрешенному run artifact root, нормализует references для текущего output bundle, копирует файл только когда declarative workflow policy требует stage-owned copy, иначе сохраняет normalized reference.
+`workflow-container-runtime` должен иметь artifact materialization layer с явными policy. Source-agnostic часть получает references из validated stage result, проверяет принадлежность каждого source path разрешенному run artifact root, нормализует references для текущего output bundle, копирует файл только когда declarative workflow policy требует stage-owned copy, иначе сохраняет normalized reference. Runtime может содержать default browser artifact copy policy, но эта browser-specific логика должна быть изолирована в одном runtime-owned policy object и отключаема через stage config.
 
 `DBOS` step считается завершенным только после durable записи `result.json`, `verification.json` и всех generated artifacts, необходимых для автоматического восстановления после restart с этого или следующего step.
 
@@ -690,7 +690,7 @@ Workflow source получает browser runtime как готовый `MCP` URL
 Workflow source не должен запускать прямые `@playwright/mcp`, `npx`, OpenVPN или альтернативные browser/VPN launchers.
 
 ## Проверки
-Contract tests for workflow-container projects should verify stage naming, complete Jinja2 templates for action and verification stages, absence of human-readable stage instructions in Python multiline strings, schema validation on runner boundary and generic artifact materialization without browser-specific copies inside `Codex` stage.
+Contract tests for workflow-container projects should verify stage naming, complete Jinja2 templates for action and verification stages, absence of human-readable stage instructions in Python multiline strings, schema validation on runner boundary and centralized runtime-owned artifact materialization policy without browser-specific copies inside `Workflow Source` or `Codex` stage.
 ```
 
 - [ ] **Step 2: Trim platform runtime design**

@@ -99,9 +99,9 @@ CLI-инструменты не должны содержать branches such as
 - shared prompt fragments under one template partials tree;
 - no human-readable stage instructions in Python multiline strings;
 - schema validation at `Codex` runner boundary from Pydantic-generated JSON Schema;
-- generic artifact materialization layer;
+- runtime-owned artifact materialization policy layer;
 - generated artifacts vs external artifact references;
-- no browser-specific copy behavior inside `Codex` stage;
+- no browser-specific copy behavior inside `Workflow Source` or `Codex` stage;
 - browser runtime received as external `MCP` URL;
 - workflow code does not launch `@playwright/mcp`, `npx`, OpenVPN or custom browser runtime;
 - `Codex` subprocess has no filesystem sandbox inside workflow container.
