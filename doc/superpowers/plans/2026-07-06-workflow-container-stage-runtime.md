@@ -20,8 +20,8 @@
 - Modify `brand_size_chart/stage/semantic.py`: remove local generic lifecycle or turn it into a thin deleted import replacement.
 - Modify `brand_size_chart/stage/*.py`: call runtime verified stage runner and pass domain prompt context, result model, and mechanical validator hooks.
 - Remove the domain-owned verification result model.
-- Modify `brand_size_chart/prompt/template/*.j2`: use `*_json` template variables and replace special public state filenames with `state.json`.
-- Modify `brand_size_chart/validator/*.py`: validate `state.json` where source inventory or table execplan is required.
+- Modify `brand_size_chart/prompt/template/*.j2`: use `*_json` template variables and replace special public state filenames with declared stage artifacts or private `state.json`.
+- Modify `brand_size_chart/validator/*.py`: validate `state.json` where source inventory is required and validate declared stage artifacts where they own durable progress.
 - Modify tests in all touched projects to cover the new ownership and filenames.
 
 ## Task 1: Plugin Contract Update
@@ -45,7 +45,7 @@
 - [x] Replace local generic verified stage usage with `workflow-container-runtime` verified stage runner.
 - [x] Keep `SourceDiscoveryStage`, `TableExtractionStage`, `CoverageDecisionStage`, `CanonicalSelectionStage`, and `WorkflowRunPromptApplyStage` as domain wrappers only.
 - [x] Move source discovery inventory to `source_discover/state.json`.
-- [x] Move table extraction execplan to `table_extract/state.json`.
+- [x] Move table extraction durable progress to declared chart artifact targets.
 - [x] Remove manual `verification_artifact_path_list` plumbing when the runtime can derive standard stage files.
 - [x] Ensure all owner-controlled JSON payload variables and template context names use `*_json`.
 - [x] Remove the domain-owned verification result and import the runtime-owned verification result.

@@ -54,17 +54,24 @@ Then evaluate whether the instruction form is strong enough for that role:
 
 For Codex-backed workflow-container stages, audit the simple action and verification contract before domain details:
 
-- action stages must write `result.json`;
-- verification stages must write `verification.json` in the same stage directory;
-- batch, retry, or resumable progress must use `state.json`;
+- action stages return schema-valid JSON and write only explicitly declared generated artifacts or private stage-local state;
+- runtime writes `prompt_context.json`, `result.json`, and `verification.json` in the same stage directory;
+- verification stages return `StageVerificationResult` and do not write `verification.json` directly;
+- batch, retry, or resumable progress must be durable through declared stage artifacts or private stage-local `state.json` when separate state is needed;
+- later stages must not depend on a previous stage's private `state.json`;
 - stage-specific public state filenames are invalid;
-- verification results must not own artifact namespaces or artifact lists as the source of truth;
-- mechanical validators must check paths, duplicates, required files, schema-adjacent invariants, and internal consistency;
+- action template names must be derived from `stage_key` as `{stage_key}.md.j2`;
+- verification template names must be derived from `stage_key` as `{stage_key}_verify.md.j2`;
+- runtime config must not expose template-name fields, a separate generic stage-instruction field, a separate generic shared-instruction field, or a generic state-path field;
+- verification results must contain only `status` and `feedback_list`, and must not own artifact namespaces, artifact lists, copied result payloads, or a second failure channel as the source of truth;
+- verification prompts must receive `stage_result_path` and require reading `result.json` from disk instead of receiving copied stage result JSON in prompt context;
+- mechanical validators must check paths, duplicates, required files, schema-adjacent invariants, and internal consistency before semantic verification, and must report failure by raising `RuntimeError`;
+- a mechanical validation failure must feed back to action without invoking semantic verification for that attempt;
 - semantic verification must check source or evidence correctness;
-- later stages must consume verified `result.json` and declared artifacts instead of reinterpreting previous stage semantics through a separate cross-stage validator layer;
+- later stages must consume declared DBOS handoff payloads and declared artifacts without revalidating previous stage semantic correctness;
 - owner-controlled JSON payload names must use `_json`.
 
-Report a finding when one instruction artifact defines a second public state file, asks a verifier to own artifact selection, duplicates Pydantic/schema checks as prompt text, omits durable `state.json` for retryable batch work, or introduces a custom stage runtime that should belong to `workflow-container-runtime`.
+Report a finding when one instruction artifact defines a second public state file, asks a verifier to own artifact selection, duplicates Pydantic/schema checks as prompt text, omits durable declared artifacts or private state for retryable batch work, requires private `state.json` where declared stage artifacts already own durable progress, adds generic prompt channels outside typed prompt context, or introduces a custom stage runtime that should belong to `workflow-container-runtime`.
 
 ## Prompt Refactor Gate
 

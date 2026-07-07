@@ -667,11 +667,11 @@ Create `doc/design/workflow-container-authoring.md` with the reusable authoring 
 ## `Codex` Stage
 Codex-backed stage должен состоять из action stage и verification stage. Action stage name должен иметь форму `{object}_{action}`, где `{action}` является глаголом. Verification stage name должен быть action stage name с постфиксом `_verify`.
 
-Action stage пишет `result.json`. Verification stage пишет `verification.json` в тот же stage directory и не владеет отдельным artifact namespace. Verification failure возвращается как feedback в тот же action stage до достижения attempt limit. Отдельные fix stages запрещены.
+`Codex` action возвращает schema-valid JSON и пишет только явно объявленные generated artifacts или optional `state.json`. Runtime materializes configured artifacts, writes `result.json`, runs mechanical validation and semantic verification, then writes `verification.json`. Verification stage не владеет отдельным artifact namespace. Verification failure возвращается как feedback в тот же action stage до достижения attempt limit. Отдельные fix stages запрещены.
 
 Prompt каждого Codex-backed stage должен быть одним полным Jinja2 template-файлом. `Workflow Source` должен рендерить template через typed context object и strict undefined handling. Python code не должен хранить human-readable stage instructions в multiline strings.
 
-`Codex` output должен валидироваться на границе runner-а через JSON schema, сгенерированную из Pydantic model stage result. Stage code может записывать `result.json` только после успешной schema/model validation.
+`Codex` output должен валидироваться на границе runner-а через JSON schema, сгенерированную из Pydantic model stage result. Only runtime may write `result.json` after successful schema/model validation.
 
 ## Artifact Materialization
 Codex-backed action stage различает generated artifacts и external artifact references.
@@ -680,7 +680,7 @@ Generated artifacts принадлежат текущему stage. Они соз
 
 External artifact references указывают на файлы, созданные другой run-owned системой или предыдущим stage. Codex-backed action stage не должен копировать такие файлы. Он должен вернуть references в своем schema-valid result.
 
-`workflow-container-runtime` должен иметь artifact materialization layer с явными policy. Source-agnostic часть получает references из validated stage result, проверяет принадлежность каждого source path разрешенному run artifact root, нормализует references для текущего output bundle, копирует файл только когда declarative workflow policy требует stage-owned copy, иначе сохраняет normalized reference. Runtime может содержать default browser artifact copy policy, но эта browser-specific логика должна быть изолирована в одном runtime-owned policy object и отключаема через stage config.
+`workflow-container-runtime` должен иметь artifact materialization layer с явными generic policy. Source-agnostic часть получает references из validated stage result, проверяет принадлежность каждого source path разрешенному run artifact root, нормализует references для текущего output bundle, копирует файл только когда declarative workflow policy требует stage-owned copy, иначе сохраняет normalized reference. Runtime может содержать `.playwright-mcp/current` как один default artifact root для browser evidence, но policy fields должны оставаться source-neutral, а materialization должна отключаться пустым artifact root list.
 
 `DBOS` step считается завершенным только после durable записи `result.json`, `verification.json` и всех generated artifacts, необходимых для автоматического восстановления после restart с этого или следующего step.
 
