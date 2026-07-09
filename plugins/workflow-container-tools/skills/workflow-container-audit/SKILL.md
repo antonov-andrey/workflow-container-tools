@@ -53,37 +53,39 @@ Before reporting domain-level wording or behavior findings, check the artifact a
 Report a minimality finding when the artifact introduces or preserves:
 
 - two objects for one semantic concept;
-- mirrored fields across result, typed stage input, private state, artifact handles, audit views, or DBOS handoff payloads;
-- duplicated status, error, message, note, priority, identity, path, applicability, or evidence channels;
+- mirrored semantic data across result, typed stage input, private state, artifact handles, audit views, or DBOS handoff payloads;
+- duplicate channels for one semantic fact or decision;
 - prompt schema text that duplicates Pydantic models or mechanical validators;
 - validator logic that reconstructs the next handoff object instead of only validating the current boundary;
 - compatibility bridges, proxy layers, alias payloads, or translation layers that exist only to keep an older contract shape alive;
 - private stage state that later stages consume as public handoff data;
 - a new abstraction that does not remove duplication, stabilize one boundary, or simplify validation and recovery.
 
-The recommended fix must prefer simplification first: remove the duplicate field or object, reuse the existing stable model, move the data to the single owner, derive the value from an existing stable handle, or make one boundary the only source of truth. If simplification is impossible, the finding must propose the smallest idiomatic change that satisfies `KISS`, `DRY`, single source of truth and explicit ownership.
+The recommended fix must prefer simplification first: remove duplicate data or objects, reuse the existing stable model, move the data to the single owner, derive the value from an existing stable handle, or make one boundary the only source of truth. If simplification is impossible, the finding must propose the smallest idiomatic change that satisfies `KISS`, `DRY`, single source of truth and explicit ownership.
 
 Keep the finding scoped to the changed or directly affected boundary. Do not ask for unrelated broad refactoring unless the duplicated contract crosses that boundary and prevents a correct fix.
 
 ## Stage Boundary Review
 
-For Codex-backed workflow-container stages, use `Codex Stage`, `Stage Lifecycle`, `Prompt Routing`, `DBOS Handoff`, `Durable Step Completion`, `JSON Payload Naming`, and `Artifact Materialization` from `../workflow-container-developer/references/workflow-container-authoring.md` as the stage-boundary source of truth. `Stage Lifecycle` owns the base-class lifecycle contract and its ordered file-writing flow. Audit whether the artifact violates those owner sections or adds a second owner for one of their boundaries.
+For Codex-backed workflow-container stages, use `Codex Stage`, `Stage Lifecycle`, `Workflow Container Class Structure`, `Prompt Routing`, `DBOS Handoff`, `Durable Step Completion`, `JSON Payload Naming`, and `Artifact Materialization` from `../workflow-container-developer/references/workflow-container-authoring.md` as the stage-boundary source of truth. `Stage Lifecycle` owns the public type roles, deterministic step order, Codex-backed step order, standard file writes, validation timing, semantic verification timing, and retry loop. `Workflow Container Class Structure` owns runtime class placement, concrete workflow inheritance, concrete step inheritance, and removal of obsolete lifecycle APIs. Audit whether the artifact violates those owner sections or adds a second owner for one of their boundaries.
 
 Report a stage-boundary finding when one artifact:
 
 - defines a second public state file or makes a later stage depend on a previous stage's private `state.json`;
+- builds typed stage input inline in DBOS workflow code, prompt code, or ad hoc wrapper code instead of through the concrete step `input_build(input_source)` interface;
+- builds `InputSourceT` from previous private `state.json` paths or contents instead of public workflow parameters, public result payloads, and declared artifact handles;
 - asks an action stage, verification stage, prompt template, or domain wrapper to write `input.json`, `result.json`, or `verification.json`;
 - concrete stages write `input.json`, `result.json`, or `verification.json` manually instead of using `WorkflowStepBase` or `WorkflowStepCodexBase`;
 - asks a verifier to own artifact selection, artifact namespaces, artifact lists, or a second failure channel;
 - duplicates Pydantic/schema checks, mechanical validator checks, or `Stage Lifecycle` ordering as prompt text;
-- prompts use `prompt_context_path`, copied result JSON, `draft_result_json`, or `previous_result_json` instead of `input_path`, `previous_stage_result_path`, and `stage_result_path`;
-- routes runtime prompt paths differently from `Prompt Routing`, such as passing `stage_result_path` to an action prompt, `previous_stage_result_path` to a verification prompt, or any copied result channel named by `Prompt Routing` instead of runtime-owned path arguments;
-- omits any recovery-bundle member required by `Durable Step Completion`, including materialized external artifact tree files referenced by current stage data and required to rerun validation or verification after restart;
+- prompts use obsolete prompt-context routing or copied result payloads instead of the runtime-owned path routing defined by `Prompt Routing`;
+- routes runtime prompt paths differently from `Prompt Routing`;
+- omits recovery-bundle data required by `Durable Step Completion` to rerun validation or verification after restart;
 - requires private `state.json` when declared stage artifacts already own durable progress;
 - DBOS code reads a previous stage `state.json`;
 - a concrete stage has a second data shape for the same semantic object instead of one minimal stable object;
 - an implementation adds compatibility aliases for both prompt-context and input terminology;
-- adds generic prompt channels outside typed stage input, such as template-name fields, generic shared instructions, generic stage instructions, or generic state-path fields;
+- adds extra generic runtime input channels alongside typed `InputT` instead of making stage-specific runtime values part of the concrete `InputT`;
 - introduces a custom stage runtime that should belong to `workflow-container-runtime`;
 - lets owner-controlled JSON payload names avoid the `_json` suffix.
 
@@ -91,9 +93,9 @@ Report a stage-boundary finding when one artifact:
 
 Before reporting domain-level findings for one prompt template, evaluate whether the prompt itself needs structural refactoring.
 
-Report prompt refactoring as the first finding when a prompt has multiple responsibilities such as boundary contract, workflow sequence, retry, recovery, persistent state, external-source access, and verification handoff, but presents them as one flat instruction block without clear role-specific structure or an explicit execution sequence.
+Report prompt refactoring as the first finding when a prompt has multiple responsibilities but presents them as one flat instruction block without clear role-specific structure or an explicit execution sequence.
 
-The refactor finding must state the target structure that fits the prompt role, for example contract boundaries, step sequence, persistent state, retry or recovery state machine, and terminal handoff rules. Do not require identical headings in every prompt; require a structure that makes the real workflow executable and reviewable.
+The refactor finding must state the target structure required by the prompt's actual role. Do not require identical headings in every prompt; require a structure that makes the real workflow executable and reviewable.
 
 Do not bury a prompt-structure problem under narrower domain findings. If the prompt form makes reliable execution, recovery, or later audit unclear, the audit must recommend prompt refactoring before recommending domain-specific wording fixes.
 

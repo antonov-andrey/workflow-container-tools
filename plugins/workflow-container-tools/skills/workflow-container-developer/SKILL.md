@@ -9,7 +9,7 @@ Use this skill for workflow-container ecosystem work. The ecosystem includes con
 
 ## Workflow
 
-1. Identify the target repository from the current working directory and its files such as `workflow.yaml`, `versions.yaml`, `pyproject.toml`, `AGENTS.md`, and `doc/design/*.md`.
+1. Identify the target repository from the current working directory and its declared metadata, package, instruction, and design files.
 2. Before changing workflow contracts, prompt contracts, artifact layout, runtime boundaries, code quality rules, prompt templates, stage instructions, validator instructions, or recovery instructions, read `references/workflow-container-authoring.md`.
    - Treat `input.json`, `input_path`, `WorkflowBase`, `WorkflowStepBase`, and `WorkflowStepCodexBase` as the current stage-file and class contract.
    - Treat `prompt_context.json`, `prompt_context_path`, and prompt-context public-boundary terminology as obsolete except when documenting migration away from the old contract.
@@ -29,7 +29,7 @@ Use this skill for workflow-container ecosystem work. The ecosystem includes con
    - describe recovery next steps near the failure mode that triggers them,
    - avoid broad suggestions when an exact action or transition is required.
 5. After changing workflow-container code or instructions, review the changed or directly affected boundary against `Minimal Stable Contract`:
-   - remove duplicated semantic objects, mirrored fields, redundant status/error/message channels, proxy layers, bridge states, copied schema text, duplicated prompt instructions, validator-owned object reconstruction, and unclear ownership,
+   - remove duplicate owners for the same semantic data, redundant lifecycle or domain verdict channels, proxy layers, bridge states, copied schema text, duplicated prompt instructions, validator-owned object reconstruction, and unclear ownership,
    - keep the cleanup scoped to the changed or directly affected boundary unless the user explicitly asks for wider refactoring.
 6. Do not require a fixed set of headings for every prompt. Require the instruction form that matches the prompt's role.
 7. Use the semantic `workflow-container-audit` skill for instruction audits; do not require a Python CLI audit command from this repository.

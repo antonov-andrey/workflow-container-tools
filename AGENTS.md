@@ -4,7 +4,7 @@
 - This project owns reusable authoring instructions, design contracts and optional local discovery CLI tooling for adjacent workflow-container projects.
 - This project is not a runtime dependency of concrete workflow-container projects.
 - Shared workflow-container ecosystem authoring and code quality rules live in the `workflow-container-developer` plugin reference `references/workflow-container-authoring.md`.
-- Optional local discovery tooling must discover target workflow-container projects through declared project files such as `workflow.yaml` and `versions.yaml`.
+- Optional local discovery tooling must discover target workflow-container projects through declared project metadata files.
 - Hardcoding concrete target project names in product code is forbidden.
 - Target-specific workflow logic, source types, prompts and validators belong only to the target workflow-container project.
 
