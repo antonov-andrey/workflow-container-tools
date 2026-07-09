@@ -8,6 +8,9 @@ AUTHORING_REFERENCE_PATH = (
     PLUGIN_ROOT / "skills" / "workflow-container-developer" / "references" / "workflow-container-authoring.md"
 )
 DEVELOPER_SKILL_PATH = PLUGIN_ROOT / "skills" / "workflow-container-developer" / "SKILL.md"
+STAGE_FILE_CONTRACT_DESIGN_PATH = (
+    PLUGIN_ROOT / "skills" / "workflow-container-developer" / "references" / "2026-07-09-stage-file-contract-design.md"
+)
 
 
 def _markdown_section_get(text: str, heading: str, next_heading: str | None = None) -> str:
@@ -246,6 +249,47 @@ def test_authoring_reference_keeps_artifact_materialization_timing_in_lifecycle(
     assert "after action and before mechanical validation" not in artifact_section
     assert "`DBOS` step считается завершенным" not in artifact_section
     assert "copying the matching stage tree into the current stage directory" in artifact_section
+
+
+def test_stage_file_contract_design_requires_concrete_refactor_structure() -> None:
+    """Keep the stage-file design tied to concrete refactor target classes."""
+
+    design_text = STAGE_FILE_CONTRACT_DESIGN_PATH.read_text(encoding="utf-8")
+    refactor_section = _markdown_section_get(design_text, "## Refactor Target Structure", "## DBOS Handoff")
+    verification_section = _markdown_section_get(design_text, "## Verification Criteria")
+
+    assert "A refactor that only renames files" in refactor_section
+    assert "`workflow_container_runtime/stage/file.py`" in refactor_section
+    assert "`workflow_container_runtime/stage/step.py`" in refactor_section
+    assert "`WorkflowStepBase[InputT, ResultT]`" in refactor_section
+    assert "`WorkflowStepCodexBase[InputT, ActionOutputT, ResultT]`" in refactor_section
+    assert "Its current `VerifiedCodexStageRunner` lifecycle must move into `WorkflowStepCodexBase`" in refactor_section
+    assert "`brand_size_chart/model/stage_input.py`" in refactor_section
+    assert "replaces `brand_size_chart/model/stage_context.py`" in refactor_section
+    assert "Models must use `*Input` names, not `*PromptContext` names" in refactor_section
+    assert (
+        "SourceDiscoveryStep(WorkflowStepCodexBase[SourceDiscoveryInput, BrowserActionResult, SourceDiscoveryResult])"
+        in refactor_section
+    )
+    assert (
+        "TableExtractionStep(WorkflowStepCodexBase[TableExtractionInput, TableExtractionDeltaBatchResult, TableExtractionResult])"
+        in refactor_section
+    )
+    assert (
+        "CoverageDecisionStep(WorkflowStepCodexBase[CoverageDecisionInput, CoverageDecisionResult, CoverageDecisionResult])"
+        in refactor_section
+    )
+    assert (
+        "CanonicalSelectionStep(WorkflowStepCodexBase[CanonicalSelectionInput, CanonicalSelectionResult, CanonicalSelectionResult])"
+        in refactor_section
+    )
+    assert "They must not build next-stage inputs by reading previous private state" in refactor_section
+    assert "Public helpers whose only job is forwarding unchanged arguments" in refactor_section
+    assert "concrete `brand-size-chart` stage classes match the target names" in verification_section
+    assert (
+        "`VerifiedCodexStageRunner` and unchanged-argument lifecycle forwarding wrappers are absent"
+        in verification_section
+    )
 
 
 def test_authoring_reference_splits_codex_stage_prompt_owners() -> None:
