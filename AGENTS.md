@@ -20,3 +20,4 @@
 - Python code must be formatted with Black using target version `py314` and line length `120`.
 - CLI commands must use standard `argparse`.
 - Tests must use `pytest`.
+- Tests must not verify instruction artifacts by checking that specific prose, headings, phrases, examples, files, or placement rules exist or do not exist. This includes `AGENTS.md`, `SKILL.md`, plugin reference Markdown, design documents, and prompt authoring guidance. Instruction artifacts are verified by semantic reread or semantic audit, not by pytest assertions over text or instruction artifact paths.
