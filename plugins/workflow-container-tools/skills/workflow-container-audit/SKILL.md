@@ -53,7 +53,7 @@ Before reporting domain-level wording or behavior findings, check the artifact a
 Report a minimality finding when the artifact introduces or preserves:
 
 - two objects for one semantic concept;
-- mirrored fields across result, prompt context, private state, artifact handles, audit views, or DBOS handoff payloads;
+- mirrored fields across result, typed stage input, private state, artifact handles, audit views, or DBOS handoff payloads;
 - duplicated status, error, message, note, priority, identity, path, applicability, or evidence channels;
 - prompt schema text that duplicates Pydantic models or mechanical validators;
 - validator logic that reconstructs the next handoff object instead of only validating the current boundary;

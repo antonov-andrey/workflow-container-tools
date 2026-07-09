@@ -25,7 +25,7 @@ Project-local imports должны быть обычными module-scope import
 ## Minimal Stable Contract
 Workflow-container data contracts must be minimal and stable. One semantic concept must have one minimal stable model at its owning boundary. Other layers must pass that model, reference it, or derive from it instead of creating a second shape for the same concept.
 
-Stage result, DBOS handoff payload, prompt context, private state, declared artifact and audit view are different roles. They must not mirror the same fields only because several stages need the data. If one value can be derived from an existing stable object, artifact handle, prompt context, registry, or verified handoff payload, a second field for that value is forbidden.
+Stage result, DBOS handoff payload, typed stage input, private state, declared artifact and audit view are different roles. They must not mirror the same fields only because several stages need the data. If one value can be derived from an existing stable object, artifact handle, typed stage input, registry, or verified handoff payload, a second field for that value is forbidden.
 
 Avoid duplicated status, error, message, note, priority, identity, path and applicability channels. Runtime lifecycle state belongs to runtime lifecycle results. Domain state belongs to one domain model. Human-readable audit or UI views may expose a subset derived from the stable source, but they must not become a second owner of that data.
 
@@ -164,7 +164,7 @@ Workflow source получает browser runtime как готовый `MCP` URL
 
 Workflow source не должен запускать прямые `@playwright/mcp`, `npx`, OpenVPN или альтернативные browser/VPN launchers.
 
-Search queries должны выполняться через внутренний web search `Codex`, а не через browser runtime. `Codex` stage не должен открывать public search-engine result pages через Playwright `MCP`; browser runtime используется только для target source pages, выбранных из internal search results, site navigation, saved evidence или prompt context.
+Search queries должны выполняться через внутренний web search `Codex`, а не через browser runtime. `Codex` stage не должен открывать public search-engine result pages через Playwright `MCP`; browser runtime используется только для target source pages, выбранных из internal search results, site navigation, saved evidence или typed stage input.
 
 Каждый browser-backed action stage result, который открывает target URLs, должен иметь schema-valid `browsing_error_list` с объектами `{url, error}`. В этот список записываются все URL, по которым stage получил network error, timeout, DNS/TLS error, HTTP blocker, CAPTCHA, bot-check, access-denied, redirect-loop или другой browser-visible отказ. Такие ошибки нельзя прятать только в screenshots, notes, evidence files или generic `error_list`.
 
