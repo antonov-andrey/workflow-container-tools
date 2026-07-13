@@ -73,13 +73,14 @@ Keep the finding scoped to the changed or directly affected boundary. Do not ask
 
 ## Public Input Review
 
-Use `2.3. Исходные контракты и версии`, `2.4. Публичный вход и форма настроек`, `2.5. Миграция публичного входа`, `3.1. Протоколы типов`, and `5.4. Маршрутизация prompt` from `../workflow-container-developer/references/workflow-container-authoring.md` as the public-input source of truth.
+Use `2.3. Исходные контракты и версии`, `2.4. Публичный вход и форма настроек`, `2.5. Миграция публичного входа`, `3.1. Протоколы типов`, `3.2. Контексты выполнения и состояние Codex`, `5.4. Маршрутизация prompt`, and `7.3. Browser runtime` from `../workflow-container-developer/references/workflow-container-authoring.md` as the public-input source of truth.
 
 Report a public-input finding when one artifact:
 
 - separates request and run settings into independently persisted payloads instead of one concrete `WorkflowInputT`;
 - stores a partial patch, applies runtime merge precedence, or relies on a missing-field default after the full input has been saved;
 - defines `step_map` as an arbitrary mapping, adds empty config objects for steps without settings, or gives a non-concurrent step a `concurrency` field;
+- gives a browser-backed workflow a profile writeback policy outside `WorkflowBrowserConfigBase`, hides profile settings outside the exact step config, or treats an empty profile-name prefix as disabling rather than removing filtering;
 - copies workflow or step config into step `input.json` instead of storing `workflow_input_path` and passing the exact selected config as a DBOS-recorded argument;
 - keeps model, reasoning, correction limit, concurrency, or user instructions in a constructor-owned runtime config or lets action and verifier use different model settings;
 - fails to make both workflow-level and current-step instructions visible to both action and verifier with the precedence owned by `5.4. Маршрутизация prompt`;
@@ -101,6 +102,7 @@ Report a runtime-boundary finding when one artifact:
 - lets `CodexRunner` retain model or reasoning between calls, omits explicit per-call `CodexRunnerConfig`, or uses different model settings for action and verifier in one attempt;
 - treats a semantic step helper as a DBOS method owner or executes external IO outside a checkpointed DBOS step; ordinary steps use a synchronous `@DBOS.step` wrapper, while concurrent-capable steps use the inherited bounded `DBOS.run_step_async` path;
 - implements concurrent-capable step scheduling outside `WorkflowStepCodexConcurrentBase`, changes DBOS queue configuration per run, returns results in completion order, or makes the reported failure depend on task completion order;
+- routes browser invocations differently from `7.3. Browser runtime`, including serialization by the shared MCP router URL, reuse of one named profile without a lifecycle lease, domain-owned physical profile paths, or source reset during verification;
 - accepts a concurrent invocation batch spanning different run roots or workflow inputs, or permits duplicate or out-of-run step instance directories;
 - lets concrete steps override runtime-owned `run(...)` or lifecycle dispatch instead of implementing only declared domain hooks;
 - builds `InputT` outside `input_build(execution_context, input_source)` or gives one step a parallel input channel for the same domain data;
@@ -125,7 +127,7 @@ Report a runtime-boundary finding when one artifact:
 
 ## Persistence And Recovery Review
 
-Use `4.1. Дерево экземпляров`, `4.2. Стандартные файлы`, `4.3. Межшаговая передача`, `4.4. Объявленные артефакты`, `4.5. Инкрементальные данные`, `5.7. Атомарная публикация и восстановление`, and `7.4. Материализация внешних артефактов` from `../workflow-container-developer/references/workflow-container-authoring.md` as the persistence source of truth.
+Use `4.1. Дерево экземпляров`, `4.2. Стандартные файлы`, `4.3. Межшаговая передача`, `4.4. Объявленные артефакты`, `4.5. Инкрементальные данные`, `5.7. Атомарная публикация и восстановление`, `7.3. Browser runtime`, and `7.4. Материализация внешних артефактов` from `../workflow-container-developer/references/workflow-container-authoring.md` as the persistence source of truth.
 
 Report a persistence or recovery finding when one artifact:
 
@@ -153,7 +155,8 @@ Report a persistence or recovery finding when one artifact:
 - accepts an action-supplied path for an artifact whose identity is created during the action instead of deriving the target from the validated identity inside one declared artifact root;
 - lets Codex directly or collectively write independently recoverable declared artifacts when the step requires each item to be validated and durably published before advancing, instead of using the owner-defined single-item producer boundary from `4.4. Объявленные артефакты`;
 - materializes external artifacts without prevalidating the complete tree, allows writes to runtime-owned root files or diagnostics, partially copies a rejected tree, or replaces existing targets non-atomically;
-- creates private state when declared artifacts already own all durable progress.
+- creates private state when declared artifacts already own all durable progress;
+- publishes browser profile state without the single atomic writeback candidate and `McpPlaywrightProfileWritebackPolicy` from `7.3. Browser runtime`, invents candidate registries or conflict checks over versioned S3 manifests, or lets a DBOS step return before a required `working` writeback completes.
 
 Do not report temporary coexistence of a previous verdict and a newly published result as a defect by itself. That state is crash-safe only because recovery requires both the canonical result digest and the current publication revision.
 
