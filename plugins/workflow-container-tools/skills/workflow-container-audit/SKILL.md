@@ -107,7 +107,7 @@ Report a runtime-boundary finding when one artifact:
 - builds `InputSourceT` from previous private state instead of public workflow input, successful results and declared artifact handles;
 - performs filesystem, network, Codex or other external IO directly in a DBOS workflow method;
 - lets concrete code write standard workflow or step files instead of runtime-owned lifecycle;
-- decorates inherited `WorkflowBase` publication methods with `@DBOS.step` instead of using the runtime-owned `DBOS.run_step` boundary;
+- decorates inherited `WorkflowBase` publication methods with `@DBOS.step`, calls them without `await`, or uses synchronous `DBOS.run_step` instead of the runtime-owned `DBOS.run_step_async` boundary;
 - asks a verifier to own artifact selection, artifact namespaces, artifact lists, or a second failure channel;
 - asks a semantic verifier, Codex action, validator, or concrete step to compute result digest/revision, return persisted `VerificationResult`, or write `verification.json` instead of returning only transient `VerificationDecision` to the runtime;
 - duplicates Pydantic/schema checks or mechanical validator checks as prompt text;

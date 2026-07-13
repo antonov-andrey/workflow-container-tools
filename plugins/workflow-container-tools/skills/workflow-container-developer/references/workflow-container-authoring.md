@@ -171,6 +171,10 @@ WorkflowInputT.model_json_schema()
 
 `input.schema.json` генерируется непосредственно из конкретного `WorkflowInputT`, хранится рядом с `workflow.yaml` и фиксируется в git. Файл использует JSON Schema Draft 2020-12 и ограничивается объектами с `additionalProperties: false`, примитивными типами, типизированными массивами, enum, required/default, стандартными ограничениями, локальными `$defs`/`$ref`, title/description и `x-ui-control: textarea`. Nullable-поле может использовать `anyOf` только для одного точного типа и `{"type": "null"}`. Каждое редактируемое поле имеет понятные человеку `title` и `description`; многострочные инструкции помечаются `x-ui-control: textarea`. Произвольные dictionaries, другие формы `anyOf`, `oneOf` и условные schemas запрещены.
 
+`Marketplace UI` перед построением формы один раз разрешает все локальные `$ref` в полном снимке schema с помощью готовой библиотеки, поддерживающей Draft 2020-12. Собственный код обхода цепочек `$ref` запрещен. Профиль `WorkflowInputSchema` допускает только локальные ациклические ссылки, поэтому UI не загружает внешние schema и не обрабатывает циклы. После разрешения ссылок полный input отдельно проверяется Draft 2020-12 validator.
+
+Контекстные UI-аннотации редактируемого значения принадлежат узлу, который непосредственно объявляет это значение в `properties`. Такой узел может содержать локальный `$ref` вместе с `default`, `title`, `description` и `x-ui-control`; его аннотации имеют приоритет над общими аннотациями конечной schema из `$defs`. Промежуточный узел `$defs`, единственная роль которого состоит в перенаправлении ссылки, содержит только `$ref`. Поэтому длина reference chain не создает дополнительные уровни выбора default или подписей.
+
 Schema `default` является только аннотацией начального значения формы: соответствующее поле concrete Pydantic model остается required. При публикации `WorkflowSourceVersion` marketplace проверяет schema и сохраняет неизменяемый `workflow_input_schema_json`. При создании `Workflow` UI строит форму из этого snapshot, материализует schema defaults и требует заполнить все остальные обязательные значения. `Workflow.workflow_input_json` хранит полный валидный объект.
 
 При создании `WorkflowRun` UI начинает с полной копии `Workflow.workflow_input_json`, позволяет изменить `request` и `config`, повторно валидирует весь объект и сохраняет полный `WorkflowRun.workflow_input_json`. Patch, runtime merge и повторное применение generic defaults запрещены. При смене `WorkflowSourceVersion` текущий input должен быть явно приведен к новой schema до сохранения `Workflow`.
@@ -265,7 +269,7 @@ WorkflowStepCodexConcurrentConfigT = TypeVar(
 
 `CodexRunner` не закрепляет model и reasoning в конструкторе. `WorkflowStepCodexBase` получает exact config текущего вызова от concrete workflow и передает построенный `CodexRunnerConfig` в action и verifier. Оба вызова одной попытки используют одинаковые model и reasoning. Runtime не читает model из Codex user config и не применяет fallback. `correction_attempt_limit` ограничивает общую correction FSM; `WorkflowStepCodexRuntimePolicy.execution_retry_policy` отдельно ограничивает низкоуровневые инфраструктурные повторы одного вызова.
 
-`concurrency` означает максимальное число одновременно выполняемых независимых экземпляров одного конкретного шага внутри текущего workflow run. Оно не управляет correction attempts, другими шагами, другими workflow runs, DBOS worker count или глобальной queue concurrency. Поле допускается только вместе с `WorkflowStepCodexConcurrentBase`; обычный `WorkflowStepCodexBase` его не принимает.
+`concurrency` означает максимальное число одновременно выполняемых независимых экземпляров одного конкретного шага внутри текущего workflow run. Оно не управляет correction attempts, другими шагами, другими workflow runs, DBOS worker count или глобальной queue concurrency. Поле допускается только вместе с `WorkflowStepCodexConcurrentBase`; обычный `WorkflowStepCodexBase` его не принимает. Общий scheduler дополнительно допускает только один активный invocation на один browser MCP endpoint, потому что такой endpoint владеет одним shared browser context; non-browser invocations и invocations с разными endpoint могут использовать весь заданный предел.
 
 `WorkflowStepCodexState` является изменяемым устойчивым состоянием и допускает состояния `ready`, `result_published`, `verification_failed` и `completed`. Конкретный шаг может объявить точную производную модель со своими внутренними скалярными контрольными точками, но не переопределяет поля общей среды выполнения и не копирует предметные строки из SQLite. `state_build(execution_context, step_input)` обязан вернуть объект ровно объявленного `state_model`; подкласс или более широкая модель не принимаются. Общий runtime повторно проверяет точный снимок состояния перед записью и остается единственным владельцем переходов общих FSM-полей.
 
@@ -301,7 +305,7 @@ WorkflowStepBase[InputSourceT, InputT, ResultT]
 
 | Класс | Владеет | Конкретный подкласс реализует |
 | --- | --- | --- |
-| `WorkflowBase` | Публикация и восстановление стандартных файлов workflow через унаследованные `final`-методы с `DBOS.run_step` | `run(...)` и, при наличии итоговых предметных инвариантов, `result_validate(...)` |
+| `WorkflowBase` | Публикация и восстановление стандартных файлов workflow через унаследованные асинхронные `final`-методы с `DBOS.run_step_async` | Асинхронный `run(...)` и, при наличии итоговых предметных инвариантов, `result_validate(...)` |
 | `WorkflowStepBase` | Общая публикация `input.json`, `result.json`, `verification.json`, стандартные пути и восстановление | `input_build(...)`, при необходимости `artifact_prepare(...)` и `result_validate(...)` |
 | `WorkflowStepDeterministicBase` | Финальный `run(...)` и полный жизненный цикл детерминированного шага | `result_build(...)` |
 | `WorkflowStepCodexBase` | Попытки Codex, применение exact run config, механическая граница, семантическая проверка, повторы и FSM | `result_from_action_build(...)`, `step_key`, `config_model`, `action_output_model`, `result_model` и `state_model` |
@@ -316,7 +320,7 @@ WorkflowStepBase[InputSourceT, InputT, ResultT]
 
 Метод с `@DBOS.workflow` выполняет только детерминированную оркестрацию: вызывает DBOS steps в воспроизводимом порядке и принимает решения по входу workflow и сохраненным возвратам шагов. Он не выполняет файловые, сетевые, браузерные или Codex-операции.
 
-`WorkflowBase.input_write_step(...)` и `WorkflowBase.result_write_step(...)` являются обычными `final`-методами базового класса, которые внутри вызывают `DBOS.run_step`. Они не несут унаследованный декоратор `@DBOS.step`: DBOS связывает декорированные методы экземпляра с конкретным `@DBOS.dbos_class`, поэтому такой декоратор на базовом методе не является переносимой границей. `DBOS.run_step` сохраняет устойчивую границу без одинаковых методов-оберток в каждом конкретном workflow.
+`WorkflowBase.input_write_step(...)` и `WorkflowBase.result_write_step(...)` являются асинхронными `final`-методами базового класса, которые внутри ожидают `DBOS.run_step_async`. Каждый concrete workflow реализует асинхронный метод `run(...)` и ожидает оба публикационных метода. Они не несут унаследованный декоратор `@DBOS.step`: DBOS связывает декорированные методы экземпляра с конкретным `@DBOS.dbos_class`, поэтому такой декоратор на базовом методе не является переносимой границей. Единая асинхронная граница поддерживает как последовательные, так и concurrent workflow без переключения между несовместимыми DBOS API.
 
 Конкретный подкласс `WorkflowStepBase` является реализацией семантики без состояния отдельного запуска, а не владельцем метода DBOS. Метод с `@DBOS.step` синхронно вызывает `step.run(...)` и является устойчивой границей побочных эффектов. Все внешние операции внутри `step.run(...)` происходят в рамках этого вызова.
 
@@ -438,10 +442,10 @@ JSONL разрешен только для неизменяемого append-onl
 ### 5.1. Жизненный цикл workflow
 Конкретный `WorkflowBase.run(...)` выполняет один порядок:
 
-1. Вызывает унаследованный `input_write_step(...)`, который через `DBOS.run_step` проверяет и публикует workflow `input.json`.
+1. Ожидает унаследованный `input_write_step(...)`, который через `DBOS.run_step_async` проверяет и публикует workflow `input.json`.
 2. Выполняет предметную оркестрацию только через дочерние workflow и методы с `@DBOS.step`.
 3. Строит один `WorkflowResultT` из публичных результатов оркестрации.
-4. Вызывает унаследованный `result_write_step(...)`, который через `DBOS.run_step` выполняет протокол публикации результата workflow и возвращает тот же `WorkflowResultT`.
+4. Ожидает унаследованный `result_write_step(...)`, который через `DBOS.run_step_async` выполняет протокол публикации результата workflow и возвращает тот же `WorkflowResultT`.
 
 `result_write_step(...)` всегда выполняет один порядок:
 
@@ -873,14 +877,14 @@ class WorkflowTextSummary(
         self._summary_step = summary_step
 
     @DBOS.workflow(name="text_summary", validate_args=pydantic_args_validator)
-    def run(
+    async def run(
         self,
         execution_context: WorkflowExecutionContext,
         workflow_input: WorkflowTextSummaryInput,
     ) -> WorkflowTextSummaryResult:
         """Publish input, run the domain step, and publish the workflow result."""
 
-        self.input_write_step(
+        await self.input_write_step(
             execution_context=execution_context,
             workflow_input=workflow_input,
         )
@@ -898,7 +902,7 @@ class WorkflowTextSummary(
             warning_list=[],
             summary_result=summary_result,
         )
-        return self.result_write_step(
+        return await self.result_write_step(
             execution_context=execution_context,
             workflow_input=workflow_input,
             workflow_result=workflow_result,
@@ -1425,7 +1429,7 @@ class WorkflowBase(Generic[WorkflowInputT, WorkflowResultT]):
         ...
 
     @final
-    def input_write_step(
+    async def input_write_step(
         self,
         execution_context: WorkflowExecutionContext,
         workflow_input: WorkflowInputT,
@@ -1433,7 +1437,7 @@ class WorkflowBase(Generic[WorkflowInputT, WorkflowResultT]):
         ...
 
     @final
-    def result_write_step(
+    async def result_write_step(
         self,
         execution_context: WorkflowExecutionContext,
         workflow_input: WorkflowInputT,
@@ -1454,7 +1458,7 @@ class WorkflowBase(Generic[WorkflowInputT, WorkflowResultT]):
 
 ```python
 @DBOS.workflow(..., validate_args=pydantic_args_validator)
-def run(
+async def run(
     self,
     execution_context: WorkflowExecutionContext,
     workflow_input: WorkflowInputT,
@@ -1462,7 +1466,7 @@ def run(
     ...
 ```
 
-`input_write_step(...)` и `result_write_step(...)` не переопределяются и каждый выполняет свою файловую операцию через `DBOS.run_step`. `result_validate(...)` может оставаться пустой реализацией только при отсутствии итоговых предметных инвариантов.
+`input_write_step(...)` и `result_write_step(...)` не переопределяются, ожидаются concrete workflow и каждый выполняет свою файловую операцию через `DBOS.run_step_async`. `result_validate(...)` может оставаться пустой реализацией только при отсутствии итоговых предметных инвариантов.
 
 ```python
 class WorkflowStepBase(Generic[InputSourceT, InputT, ResultT]):
