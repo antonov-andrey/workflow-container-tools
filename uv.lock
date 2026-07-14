@@ -64,7 +64,7 @@ wheels = [
 ]
 
 [[package]]
-name = "workflow-container-developer"
+name = "workflow-container-tools"
 version = "0.1.0"
 source = { editable = "." }
 

@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from workflow_container_developer.project import WorkflowContainerProjectFinder
+from workflow_container_tools.project import WorkflowContainerProjectFinder
 
 
 def _project_create(root: Path, name: str) -> Path:
@@ -26,11 +26,11 @@ def _project_create(root: Path, name: str) -> Path:
 def test_project_list_get_finds_adjacent_workflow_container(tmp_path: Path) -> None:
     """Find projects through workflow markers without hardcoded names."""
 
-    developer_path = tmp_path / "workflow-container-developer"
-    developer_path.mkdir()
+    tools_path = tmp_path / "workflow-container-tools"
+    tools_path.mkdir()
     target_path = _project_create(tmp_path, "sample-container")
     (tmp_path / "ordinary-project").mkdir()
 
-    finder = WorkflowContainerProjectFinder(developer_path=developer_path)
+    finder = WorkflowContainerProjectFinder(tools_path=tools_path)
 
     assert [project.path for project in finder.project_list_get()] == [target_path]

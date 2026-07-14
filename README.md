@@ -1,9 +1,9 @@
-# Workflow Container Developer
+# Workflow Container Tools
 
-`workflow-container-developer` is a Codex plugin marketplace source for generic design and goal brainstorming plus workflow-container authoring, audit, and input-creation skills.
+`workflow-container-tools` is a Codex plugin marketplace source for generic design and goal brainstorming plus workflow-container authoring, audit, and input-creation skills.
 
 ```text
-workflow-container-developer/
+workflow-container-tools/
   .agents/
     plugins/
       marketplace.json
@@ -26,7 +26,7 @@ workflow-container-developer/
           SKILL.md
           references/
             input-workflow.md
-  workflow_container_developer/
+  workflow_container_tools/
 ```
 
 The marketplace name is `workflow-container-tools`. The installable plugin is `workflow-container-tools`. Current skills inside that plugin are `goal-brainstorm`, `workflow-container-audit`, `workflow-container-developer`, and `workflow-container-input-create`. Future workflow-container skills should be added under the same plugin at `plugins/workflow-container-tools/skills/`.
@@ -35,10 +35,10 @@ The repository also contains optional Python CLI helper code for local project d
 
 ## Local Plugin Install
 
-Run from the `workflow-container-developer` checkout root:
+Run from the `workflow-container-tools` checkout root:
 
 ```bash
-cd <workflow-container-developer-checkout>
+cd <workflow-container-tools-checkout>
 codex plugin marketplace add .
 codex plugin add workflow-container-tools@workflow-container-tools
 ```
@@ -48,7 +48,7 @@ Start a new Codex thread after installing or reinstalling the plugin.
 ## GitHub Plugin Install
 
 ```bash
-codex plugin marketplace add antonov-andrey/workflow-container-developer --ref main
+codex plugin marketplace add antonov-andrey/workflow-container-tools --ref main
 codex plugin add workflow-container-tools@workflow-container-tools
 ```
 
@@ -73,11 +73,11 @@ Start a new Codex thread after reinstalling.
 
 ## Optional Local CLI
 
-Run the CLI from the `workflow-container-developer` checkout root without installing the package:
+Run the CLI from the `workflow-container-tools` checkout root without installing the package:
 
 ```bash
-python -m workflow_container_developer.cli --help
-python -m workflow_container_developer.cli list
+python -m workflow_container_tools.cli --help
+python -m workflow_container_tools.cli list
 ```
 
 The `list` command discovers adjacent workflow-container projects by `workflow.yaml` and `versions.yaml`; it does not know concrete workflow names.
@@ -91,6 +91,6 @@ uv venv --python 3.14
 source .venv/bin/activate
 uv pip install -e ".[test]"
 python -m pytest -q
-python -m compileall workflow_container_developer
+python -m compileall workflow_container_tools
 python ~/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py plugins/workflow-container-tools
 ```

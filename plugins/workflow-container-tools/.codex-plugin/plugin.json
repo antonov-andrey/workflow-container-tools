@@ -1,12 +1,12 @@
 {
   "name": "workflow-container-tools",
-  "version": "0.1.0+codex.20260714161944",
+  "version": "0.1.0+codex.20260714170453",
   "description": "Codex skills for brainstorming designs, writing specifications and goals, and developing, auditing, or configuring workflow-container projects.",
   "author": {
     "name": "Andrey Antonov",
     "url": "https://github.com/antonov-andrey"
   },
-  "repository": "https://github.com/antonov-andrey/workflow-container-developer",
+  "repository": "https://github.com/antonov-andrey/workflow-container-tools",
   "license": "MIT",
   "keywords": [
     "codex",

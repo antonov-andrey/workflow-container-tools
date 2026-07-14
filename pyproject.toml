@@ -3,7 +3,7 @@ requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
-name = "workflow-container-developer"
+name = "workflow-container-tools"
 version = "0.1.0"
 description = "Codex plugin marketplace source for workflow-container authoring and audit skills with optional local discovery CLI"
 readme = "README.md"
@@ -15,7 +15,7 @@ test = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["workflow_container_developer"]
+packages = ["workflow_container_tools"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

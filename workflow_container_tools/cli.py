@@ -3,7 +3,7 @@
 import argparse
 from pathlib import Path
 
-from workflow_container_developer.project import WorkflowContainerProjectFinder
+from workflow_container_tools.project import WorkflowContainerProjectFinder
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -16,13 +16,13 @@ def main(argv: list[str] | None = None) -> int:
         Process exit code.
     """
 
-    parser = argparse.ArgumentParser(prog="python -m workflow_container_developer.cli")
-    parser.add_argument("--developer-path", default=Path.cwd(), type=Path)
+    parser = argparse.ArgumentParser(prog="python -m workflow_container_tools.cli")
+    parser.add_argument("--tools-path", default=Path.cwd(), type=Path)
     subparser = parser.add_subparsers(dest="command", required=True)
     subparser.add_parser("list")
     args = parser.parse_args(argv)
 
-    finder = WorkflowContainerProjectFinder(developer_path=args.developer_path)
+    finder = WorkflowContainerProjectFinder(tools_path=args.tools_path)
     if args.command == "list":
         for project in finder.project_list_get():
             print(f"{project.name}\t{project.path}")
