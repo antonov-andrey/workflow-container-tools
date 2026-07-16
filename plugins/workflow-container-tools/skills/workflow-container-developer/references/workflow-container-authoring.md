@@ -125,14 +125,14 @@ WorkflowInputT.model_json_schema()
 ### 2.1. Владельцы ответственности
 | Проект | Ответственность |
 | --- | --- |
-| `marketplace-automation` | Платформа выполнения: schema snapshots версий, формы `Workflow` и `WorkflowRun`, их полные `workflow_input_json`, `DataSource`, `DataContainer`, доступные runtime-возможности, состояние запуска, run-local browser control endpoint, финализация и обратная запись входных данных. |
+| `workflow-control-center` | Платформа выполнения: schema snapshots версий, формы `Workflow` и `WorkflowRun`, их полные `workflow_input_json`, `DataSource`, `DataContainer`, доступные runtime-возможности, состояние запуска, run-local browser control endpoint, финализация и обратная запись входных данных. |
 | `workflow-container-contract` | Независимые от среды выполнения модели и загрузчики `workflow.yaml`, `versions.yaml`, ограниченный профиль `input.schema.json`, input validation, определения input migrations, `WorkflowRunStatus`, `McpPlaywrightProfileWritebackPolicy` и общий `WorkflowResult` для границы с платформой. |
 | `workflow-container-runtime` | Общая среда выполнения: базовые классы workflow и конфигураций, жизненный цикл, run-local concurrency и browser-profile lease, стандартные пути, атомарная запись JSON, SQLite current state, запуск Codex, рендеринг общих prompt, материализация и общие валидаторы. |
 | `browser-vpn-runtime` | Запуск browser/VPN-процессов, run-local MCP profile router, каталоги и атомарные snapshots профилей, stealth, locale, viewport и сетевой namespace браузера. |
 | Конкретный workflow-container | Предметные workflow и модели, конкретные шаги, валидаторы, шаблоны prompt и семантика предметных артефактов. |
 | `workflow-container-tools` | Инструкции по разработке, семантический аудит, skill создания и миграции `input.json` и необязательный локальный CLI обнаружения соседних проектов. |
 
-`WorkflowResultT` не управляет выходными контейнерами платформы, обратной записью или диагностическими списками. Эти данные принадлежат `marketplace-automation` и не добавляются в предметный результат ради удобства платформы.
+`WorkflowResultT` не управляет выходными контейнерами платформы, обратной записью или диагностическими списками. Эти данные принадлежат `workflow-control-center` и не добавляются в предметный результат ради удобства платформы.
 
 ### 2.2. Направление зависимостей
 Конкретный контейнер зависит от закрепленных версий `workflow-container-contract` и `workflow-container-runtime`. Контейнер может обращаться к готовому browser runtime через переданный MCP URL, но не зависит от внутреннего устройства `browser-vpn-runtime`.

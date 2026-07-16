@@ -161,7 +161,7 @@ Skill должен поддерживать explicit invocation. Plugin metadata
 
 После добавления и проверки `goal-brainstorm`:
 
-- физически удаляются существующие каталоги с устаревшими Superpowers plans/specs в `brand-size-chart`, `browser-vpn-runtime`, `marketplace-automation`, `marketplace-tr-priority` и `workflow-container-tools`;
+- физически удаляются существующие каталоги с устаревшими Superpowers plans/specs в `brand-size-chart`, `browser-vpn-runtime`, `workflow-control-center`, `marketplace-tr-priority` и `workflow-container-tools`;
 - `marketplace-tr-priority/.gitignore` начинает игнорировать удалённый каталог;
 - из `marketplace-tr-priority/AGENTS.md` удаляются требования, завязанные на Superpowers lifecycle и устаревшее расположение документации;
 - остальные несвязанные инструкции и исторические git commits сохраняются;
