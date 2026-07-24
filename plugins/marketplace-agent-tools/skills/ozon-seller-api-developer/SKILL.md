@@ -1,0 +1,16 @@
+---
+name: ozon-seller-api-developer
+description: Use when code adds, changes, audits, or consumes an Ozon Seller API client endpoint, external schema, pagination flow, buffered operation, provider configuration, documentation snapshot, or provider submodule revision.
+---
+
+# Ozon Seller API Developer
+
+The canonical provider is `ozon_seller_api`, and `ozon_seller_api/DESIGN.md` owns its stable client, configuration, endpoint, schema, buffering, error, lifecycle, and documentation-snapshot contracts.
+
+Generic outbound HTTP behavior follows `project-standards:http-api-client-developer`. Generic retry behavior follows `project-standards:python-retry-developer` and `retry_runtime/DESIGN.md`. Generic runtime configuration follows `project-standards:runtime-config-developer`. Generic submodule publication uses `agent-workflows:git-commit`.
+
+Host code uses public endpoint or buffered-operation APIs from the provider. Direct official Seller API URLs, generic public transport verbs, internal provider module imports, caller-managed pagination, and host-local copies of the multi-shop configuration parser are forbidden.
+
+An endpoint change is validated against the pinned OpenAPI snapshot and the current official Ozon contract. Tests cover method, path, payload, response parsing, pagination, provider failure, malformed response, timeout, allowed retry, forbidden ambiguous retry, and buffered state when applicable.
+
+Official `api-seller.ozon.ru` operations and authenticated `seller.ozon.ru` browser flows are separate boundaries. Browser-session behavior is not moved into the official Seller API provider merely because both systems belong to Ozon.

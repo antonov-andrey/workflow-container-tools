@@ -1,0 +1,33 @@
+{
+  "name": "workflow-container-agent-tools",
+  "version": "0.1.0+codex.20260724000000",
+  "description": "Workflow-container domain authoring, audit, and input preparation skills.",
+  "author": {
+    "name": "Andrey Antonov",
+    "url": "https://github.com/antonov-andrey"
+  },
+  "repository": "https://github.com/antonov-andrey/agent-plugins",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "workflow-container",
+    "dbos"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Workflow Container Agent Tools",
+    "shortDescription": "Author and audit workflow containers.",
+    "longDescription": "Workflow Container Agent Tools provides domain-specific skills for workflow-container development, semantic audit, and complete validated workflow input preparation.",
+    "developerName": "Andrey Antonov",
+    "category": "DeveloperTools",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Audit this workflow-container project.",
+      "Help me design a workflow-container step.",
+      "Prepare a complete input for this workflow container."
+    ]
+  }
+}

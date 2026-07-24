@@ -1,0 +1,29 @@
+{
+  "name": "marketplace-agent-tools",
+  "version": "0.1.0+codex.20260724000000",
+  "description": "Reusable marketplace-domain development workflows and tools explicitly assigned to a shared plugin.",
+  "author": {
+    "name": "Andrey Antonov",
+    "url": "https://github.com/antonov-andrey"
+  },
+  "repository": "https://github.com/antonov-andrey/agent-plugins",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "marketplace",
+    "ozon"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Marketplace Agent Tools",
+    "shortDescription": "Develop reusable marketplace integrations.",
+    "longDescription": "Marketplace Agent Tools contains only user-approved reusable marketplace-domain skills, beginning with Ozon Seller API provider development.",
+    "developerName": "Andrey Antonov",
+    "category": "DeveloperTools",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": "Develop or audit this Ozon Seller API integration."
+  }
+}
