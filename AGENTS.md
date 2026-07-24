@@ -3,6 +3,9 @@
 ## Scope
 - This project owns reusable authoring instructions, design contracts and optional local discovery CLI tooling for adjacent workflow-container projects.
 - This project is not a runtime dependency of concrete workflow-container projects.
+- `DESIGN.md` owns the stable architecture and cross-project artifact model approved for this project.
+- Active task specifications and goals live under the gitignored `.spec/` directory and follow the `goal-brainstorm` specification contract.
+- Completed or abandoned task specifications and goals must not remain in the working tree or as tracked project documentation.
 - Shared workflow-container ecosystem authoring and code quality rules live in the `workflow-container-tools` plugin reference `references/workflow-container-authoring.md`.
 - Optional local discovery tooling must discover target workflow-container projects through declared project metadata files.
 - Hardcoding concrete target project names in product code is forbidden.

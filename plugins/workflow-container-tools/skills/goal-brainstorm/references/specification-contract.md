@@ -3,32 +3,50 @@
 ## Document Owners
 
 - Applicable `AGENTS.md` files own durable project instructions and engineering constraints for their path scope.
-- `doc/design.md` and `doc/design/**.md` own stable architecture and project contracts.
-- `doc/spec/**` owns task-specific implementation requirements that do not naturally belong to existing instruction or design owners.
-- `doc/goal/**` owns one concise executable objective and exact references to its approved source contracts.
+- Root `DESIGN.md` owns the stable architecture and serves as its canonical entry point.
+- `design/**.md` owns detailed stable contracts for distinct architecture or domain areas when one `DESIGN.md` is insufficient.
+- `docs/**` owns user, operational, and other documentation that is not a stable design contract.
+- `.spec/*-spec.md` owns one temporary task-specific implementation contract.
+- `.spec/*-goal.md` owns one concise executable objective and exact references to its paired specification and approved stable source contracts.
 
-A goal is not a second design or specification owner. A specification must not copy durable instructions or architecture already owned elsewhere.
+A goal is not a second design or specification owner. A specification must not copy durable instructions or architecture already owned elsewhere. Completed or abandoned task artifacts are not project documentation and must not remain in `.spec/`.
 
 ## Document Selection
 
-A multi-repository change has one coordinating repository that owns its dedicated implementation specification and goal. Coordination ownership must follow the current project contracts or an explicit user decision.
+A multi-repository change has one coordinating repository that owns its specification and goal pair. Coordination ownership must follow the current project contracts or an explicit user decision.
 
-Use **Direct Owner Update** when the change is a small amendment to existing instructions, design, or specification, or when even a substantial change belongs completely and naturally to one or two existing owner documents. Update those owners and make the goal reference the exact changed sections. Do not create a specification merely to restate them.
+Use **Direct Owner Update** when the change is a small amendment to existing instructions or design, or when even a substantial change belongs completely and naturally to one or two existing owner documents. Update those owners. The paired specification identifies the outcome, affected owners, task boundary, and verification without copying their requirements.
 
-Use **Dedicated Implementation Specification** when the task has a substantial standalone brief, spans several owners, needs one task-level migration or rollout contract, carries shared acceptance criteria across components, or would pollute stable owner documents with implementation-specific constraints. Existing owner documents may still change, but the new specification owns only the integrating task-specific requirements.
+Use **Dedicated Implementation Specification** when the task has a substantial standalone brief, spans several owners, needs one task-level migration or rollout contract, carries shared acceptance criteria across components, or would pollute stable owner documents with implementation-specific constraints. Existing owner documents may still change, but the specification owns only the integrating task-specific requirements.
 
 If user intent conflicts with a current owner, change that owner after approval rather than hiding the conflict in a new specification.
 
-## File Names
+Trivial work that does not need a persistent goal creates neither file. Every successfully completed brainstorm that prepares a persistent goal creates both the specification and goal.
 
-Create new files with their creation date and a stable semantic name:
+## Artifact Directory
 
-```text
-doc/spec/YYYY-MM-DD-<semantic-name>.md
-doc/goal/YYYY-MM-DD-<semantic-name>.md
+Task artifacts live under the harness-neutral root directory `.spec/`. Before creating them, ensure that the coordinating repository has the exact root-level ignore rule:
+
+```gitignore
+/.spec/
 ```
 
-Do not rename an existing dated specification when updating it later. A new goal uses its own creation date and may reference an older specification. Update an existing goal file only while continuing the same inactive objective. Create a current-date goal for a new objective or a follow-up to a completed objective. Reuse a same-day path only for the same task; choose a more precise semantic name for a different task instead of adding a numeric suffix.
+The directory contains ordinary Markdown only. Vendor-specific frontmatter, harness session state, lock files, caches, and project-global durable rules are forbidden there.
+
+The directory may be absent when no task artifacts are active. Do not add `.gitkeep` or another tracked placeholder.
+
+## File Names
+
+Create one pair with the same creation date and stable semantic prefix:
+
+```text
+.spec/YYYY-MM-DD-<semantic-name>-spec.md
+.spec/YYYY-MM-DD-<semantic-name>-goal.md
+```
+
+Reuse a same-day prefix only for the same task. Choose a more precise semantic name for a different task instead of adding a numeric suffix.
+
+Do not rename an existing specification while continuing the same task. Update an existing pair only while continuing the same inactive objective. Create a current-date pair for a new objective or a follow-up to a completed objective.
 
 ## Implementation Specification
 
@@ -47,6 +65,8 @@ Use a structure shaped by the task rather than a mandatory heading template. Inc
 - verification obligations and observable acceptance criteria required by `Verification Design`.
 
 The approved specification describes the final steady state. It must not retain rejected alternatives, open questions, `TODO` markers, placeholders, compatibility bridges that are not part of the target, or a step-by-step implementation plan.
+
+For a direct owner update, keep the specification concise and reference the exact stable owners instead of restating them.
 
 ## Verification Design
 
@@ -78,7 +98,8 @@ Keep the goal materially below the persistent objective limit and use this shape
 
 ## Source Contracts
 
-- `<resolvable path>`: `<exact section or document role>`
+- `<paired-spec-path>`: `<document role>`
+- `<stable-owner-path>`: `<exact section or document role>`
 
 ## Constraints
 
@@ -91,11 +112,23 @@ Keep the goal materially below the persistent objective limit and use this shape
 
 The `Verification` section must reference the approved verification obligations and every applicable project test-contract owner without copying their rules.
 
-The goal states the outcome, essential constraints, and verification while giving Codex exact file context and freedom to build and revise its working plan. It must not copy source contracts, predict a brittle implementation-file list, or split one multi-repository objective into several goals.
+The goal states the outcome, essential constraints, and verification while giving an agent exact file context and freedom to build and revise its working plan. It must not copy source contracts, predict a brittle implementation-file list, or split one multi-repository objective into several goals.
 
-Use root-relative paths for contracts in the coordinating repository. Use absolute paths for contracts in other repositories so every cross-repository reference resolves without guessing a repository root.
+Use root-relative paths for contracts in the coordinating repository. Cross-repository references must identify both the canonical repository and its root-relative contract path unambiguously without embedding one user-specific absolute workspace root.
 
-The persistent objective should name the goal file, treat it as the completion contract, and require the full applicable verification and final semantic review. Keep detailed context in project files instead of expanding the objective.
+The persistent objective should name the goal file, treat that file and its paired specification as the completion contract, and require the full applicable verification and final semantic review. Keep detailed context in project files instead of expanding the objective.
+
+## Lifecycle
+
+1. Inspect persistent goal state before modifying an existing pair or creating a replacement for the same objective.
+2. Create or update the approved specification after the design decisions and owner changes it depends on are approved.
+3. Apply `Semantic Review` before creating or updating the paired goal.
+4. Show both files and their stable source contracts before asking separately whether to activate the goal.
+5. Keep the pair while the task is active, blocked, or explicitly paused.
+6. Before completion, move every durable resulting rule into its stable owner and confirm that deleting the pair loses no current contract.
+7. Delete both files after the task is completed or explicitly abandoned.
+
+Workspace audit must report a stale pair whose task is known to be completed or abandoned. It must not delete an active, blocked, paused, or unclassified pair automatically.
 
 ## Semantic Review
 
@@ -106,4 +139,5 @@ Before creating the goal, reread all changed and directly affected documents as 
 - public interfaces and ownership boundaries are explicit;
 - state transitions, failure behavior, and recovery are complete when applicable;
 - verification design satisfies `Verification Design` for every changed observable behavior;
-- no open decision, contradiction, unnecessary wrapper, duplicated carrier, or transition-only target remains.
+- no open decision, contradiction, unnecessary wrapper, duplicated carrier, or transition-only target remains;
+- the paired task artifacts contain no durable rule that belongs in `AGENTS.md`, `DESIGN.md`, `design/**`, `docs/**`, code, or a public interface.
