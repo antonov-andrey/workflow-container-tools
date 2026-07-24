@@ -6,6 +6,7 @@
 - `project-standards:project-instruction-developer` applies to plugin skills and instruction references.
 - `project-standards:project-documentation-developer` applies to `DESIGN.md` and maintained documentation.
 - `project-standards:python-developer`, `project-standards:python-cli-developer`, and `project-standards:pytest-developer` apply to provider-owned Python tools and tests.
+- `project-standards:runtime-config-developer` applies to environment-configured provider tools.
 
 If one required provider skill is unavailable, continue read-only discovery only and do not mutate this repository until the provider is restored.
 
