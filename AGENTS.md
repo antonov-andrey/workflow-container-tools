@@ -1,26 +1,38 @@
 # Repository Guidelines
 
-## Scope
-- This project owns reusable authoring instructions, design contracts and optional local discovery CLI tooling for adjacent workflow-container projects.
-- This project is not a runtime dependency of concrete workflow-container projects.
-- `DESIGN.md` owns the stable architecture and cross-project artifact model approved for this project.
-- Active task specifications and goals live under the gitignored `.spec/` directory and follow the `goal-brainstorm` specification contract.
-- Completed or abandoned task specifications and goals must not remain in the working tree or as tracked project documentation.
-- Shared workflow-container ecosystem authoring and code quality rules live in the `workflow-container-tools` plugin reference `references/workflow-container-authoring.md`.
-- Optional local discovery tooling must discover target workflow-container projects through declared project metadata files.
-- Hardcoding concrete target project names in product code is forbidden.
-- Target-specific workflow logic, source types, prompts and validators belong only to the target workflow-container project.
+## Required Standards
 
-## Plugin
-- This repository is a Codex plugin marketplace source named `workflow-container-tools`.
-- The installable plugin is `workflow-container-tools`.
-- Plugin skills live under `plugins/workflow-container-tools/skills/`.
-- Current skills inside that plugin are `goal-brainstorm`, `workflow-container-audit`, `workflow-container-developer`, and `workflow-container-input-create`.
-- Add future workflow-container skills under the same plugin instead of creating another install path.
+- `project-standards:project-foundation` applies to all work in this repository.
+- `project-standards:project-instruction-developer` applies to plugin skills and instruction references.
+- `project-standards:project-documentation-developer` applies to `DESIGN.md` and maintained documentation.
+- `project-standards:python-developer`, `project-standards:python-cli-developer`, and `project-standards:pytest-developer` apply to provider-owned Python tools and tests.
 
-## Python
-- Python code uses Python 3.14.
-- Python code must be formatted with Black using target version `py314` and line length `120`.
-- CLI commands must use standard `argparse`.
-- Tests must use `pytest`.
-- Tests must not verify instruction artifacts by checking that specific prose, headings, phrases, examples, files, or placement rules exist or do not exist. This includes `AGENTS.md`, `SKILL.md`, plugin reference Markdown, design documents, and prompt authoring guidance. Instruction artifacts are verified by semantic reread or semantic audit, not by pytest assertions over text or instruction artifact paths.
+If one required provider skill is unavailable, continue read-only discovery only and do not mutate this repository until the provider is restored.
+
+## Project Contract
+
+- This repository is the canonical Codex marketplace source `agent-plugins`.
+- Generic task workflows live only under `plugins/agent-workflows/`.
+- Reusable marketplace-domain agent procedures live only under `plugins/marketplace-agent-tools/`.
+- Reusable workflow-container agent procedures live only under `plugins/workflow-container-agent-tools/`.
+- This repository is not a runtime dependency of application or workflow-container code.
+- Product-specific logic, configuration, prompts, validators, and data remain in their owning application repositories.
+- `DESIGN.md` owns the stable provider architecture and cross-project artifact model.
+- Active task pairs live only under the ignored `.spec/` root; completed or abandoned pairs must be removed.
+- The repository exposes no Python distribution or project-discovery CLI.
+
+## Required Workflows
+
+- `agent-workflows:code-writer` applies to provider code changes.
+- `agent-workflows:instruction-writer` applies to plugin skills and instruction references.
+- `agent-workflows:git-commit` applies when repository changes are committed or pushed.
+- `agent-workflows:goal-brainstorm` applies when stable design or a persistent implementation goal is prepared.
+- `marketplace-agent-tools:ozon-seller-api-developer` applies to its owned marketplace-domain skill.
+- `workflow-container-agent-tools:workflow-container-developer` applies to workflow-container plugin content.
+
+## Commands
+
+- Validate each plugin with `python ~/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py <plugin-root>`.
+- Validate each skill with `python ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py <skill-root>`.
+- Format changed Python with `black --target-version py314 --line-length 120 <python-scope>`.
+- Run provider tests with `pytest -q`.
